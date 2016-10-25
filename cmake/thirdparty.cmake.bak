@@ -1,0 +1,38 @@
+
+if(WIN32)
+set(GDAL_ROOT ${WORKSPACE}/../thirdparty/gdal)
+else()
+set(GDAL_ROOT ${WORKSPACE}/thirdparty/gdal/gdal-2.0.1)
+endif()
+include(cmake/FindGDAL.cmake)
+
+message("FindQt begin")
+set(CMAKE_PREFIX_PATH ${WORKSPACE}/../../Qt/Qt5.4.1/5.4/msvc2013)
+set(CMAKE_AUTOMOC ON)
+find_package(Qt5Widgets)
+find_package(Qt5Core)
+set(CMAKE_CXX_STANDARD 14)
+message("FindQt done")
+
+
+
+
+#if(UNIX)
+#    set(BOOST_ROOT ${WORKSPACE}/thirdparty/boost/boost-1.53.0)
+#    find_package(Boost COMPONENTS system filesystem REQUIRED)
+#endif(UNIX)
+#if(WIN32)
+#    set(BOOST_ROOT ${WORKSPACE}/../thirdparty/boost/winboost_1_53_0)
+    #find_package(Boost COMPONENTS system filesystem REQUIRED)
+#    find_package(Boost REQUIRED COMPONENTS filesystem)
+    #set(Boost_INCLUDE_DIR  ${WORKSPACE}/thirdparty/boost/winboost_1_53_0/include)
+    #set(Boost_LIBRARIES  ${WORKSPACE}/thirdparty/boost/winboost_1_53-0/lib64-msvc-9.0)
+    #  set(BOOST_ROOT C:/local)
+#endif(WIN32)
+#if(Boost_FOUND)
+    #include_directories(${Boost_INCLUDE_DIR})
+    #message(${Boost_LIBRARIES})
+    #set(THIRD_PARTY_LIB ${THIRD_PARTY_LIB} ${Boost_LIBRARIES})
+#endif()
+
+message("thirdparty done")
