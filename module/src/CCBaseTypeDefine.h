@@ -13,7 +13,7 @@ const AppId InvalidAppId = 0xffffffff;
 #define XML_FILE_NAME "xml.file.name"
 #define RPB_FILE_NAME "xml.file.name"
 #define SAVE_DIR_NAME "xml.file.name"
-
+#define FILE_EMPTY 1
 
 #define assert(exp) { if (!(exp)) { std::cout << "Assertion failed: " << #exp << "\n" << "line: " << __LINE__ << "\n" << "file: " << __FILE__ << "\n";exit(EXIT_FAILURE); } }
 #endif // CCBASETYPEDEFINE_H

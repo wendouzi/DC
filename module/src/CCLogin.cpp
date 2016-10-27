@@ -263,7 +263,7 @@ void CCLogin::slot_finish_select()
                     _flag_continue = true;
                     emit sig_process_result(5);
                     // begin to process
-                    QMap<QString,QVariant> qm;
+                    QVariantMap<QString,QVariant> qm;
                     QVariant qv;
                     qm.insert(TIFF_FILE_NAME,QVariant(_tiff_file));
                     qm.insert(XML_FILE_NAME,QVariant(_xml_file));
@@ -316,7 +316,7 @@ void CCLogin::slot_for_schedule(QString q, QVariant s) {
     }
     else if (0 == q.compare(IMG_PRO_FINISH)) {
         qDebug("CCLogin::slot_for_schedule, %s",IMG_PRO_FINISH);
-
+        emit sig_process_result(0);
     }
     else if (0 == q.compare(IMG_PRO_FAILED)) {
         qDebug("CCLogin::slot_for_schedule, %s",IMG_PRO_FAILED);
