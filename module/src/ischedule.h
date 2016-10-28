@@ -9,10 +9,13 @@
 #include "QThread"
 #include <QVariant>
 #include "CCBaseTypeDefine.h"
-#include "GFimg.h"
+#include "imgcontrol.h"
+#include <memory.h>
 class CCLogin;
-class ischedule : public QThread {
+class ImgControl;
+class ischedule : public QObject{
     Q_OBJECT
+    QThread workThread;
 public:
      static ischedule* getInstance();
 private:
@@ -21,11 +24,13 @@ private:
 public slots:
     // receive the signal from UI
     void slot_for_UI(QString q, QVariant s);
+    void slot_for_imgcontrol(QString s);
 signals:
     // send signal to UI
     void sig_to_UI(QString q, QVariant s);
-protected:
-    void run();
+    void sig_to_imgcontrol(QString q1,QString q2,QString q3,QString q4);
+private:
+    void img_process_begin();
 private:
     // copy constructor
     ischedule(const ischedule&);
@@ -33,11 +38,11 @@ private:
     ischedule& operator = (const ischedule &);
     volatile bool continueflag;
     static ischedule * m_pIschedule;
-    std::string m_ftiff;
-    std::string m_fxml;
-    std::string m_frpb;
-    std::string m_dsave;
-    GFimg * m_pGF;
+    QString m_ftiff;
+    QString m_fxml;
+    QString m_frpb;
+    QString m_dsave;
+    ImgControl * m_pic;
 };
 #endif // ISCHEDULE_H
 

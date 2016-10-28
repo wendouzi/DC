@@ -4,7 +4,7 @@ QT5_ADD_RESOURCES(qmlResource ${qmlRes})
 file (GLOB picRes pictures.qrc)
 QT5_ADD_RESOURCES(picResource ${picRes})
 set(SRC base64.cpp CCLogin.cpp HomePage.cpp ischedule.cpp
-         main.cpp QmlPlugin.cpp Home.cpp
+         main.cpp QmlPlugin.cpp Home.cpp imgcontrol.cpp
          geoshape.cpp GFimg.cpp main.cpp
          tinystr.cpp tinyxml.cpp tinyxmlerror.cpp
          tinyxmlparser.cpp   )

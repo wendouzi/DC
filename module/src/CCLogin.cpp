@@ -6,30 +6,30 @@
 #include "QDebug"
 #include "QThread"
 #include "ischedule.h"
+#include "CCBaseTypeDefine.h"
 
 #define config_file QString("config.txt")
-const QString _init_user_name = "zhongguojikongzhongxin";
-const QString _init_password = "123zhongguojikongzhongxin";
+const QString _init_user_name = "123";
+const QString _init_password = "123";
 const bool _init_rememberflag = false;
 const bool _init_autoflag = false;
 CCLogin::CCLogin(): _user_id("")
   , _password("")
   , _flag_auto(false)
   , _flag_remember(false)
+  , login_counter(0)
 {
-    // 初始化变量
-    login_counter = 0;
-
+    qDebug("CCLogin constructor");
     /* 滴答初始化 */
     timer = new QTimer(this);
-    // 绑定信号槽
-    connect(timer,SIGNAL(timeout()), this, SLOT(slot_tick()));
+    /* 绑定信号槽 */
+    if(!connect(timer,SIGNAL(timeout()), this, SLOT(slot_tick()))) {
+        qDebug("timer connect failed");
+    }
     QFile file_cfg(config_file);
 
     QString str;
 
-
-    //判断文件是否存在
     if (!file_cfg.exists())
     {
         qDebug("%s does not exist!\n",config_file.toStdString().c_str());
@@ -102,6 +102,7 @@ CCLogin::~CCLogin()
     qDebug("CCLogin::~CCLogin()");
     disconnect(this,SIGNAL(sig_for_schedule(QString,QVariant)),SCHEDULE,SLOT(slot_for_UI(QString,QVariant)));
     disconnect(SCHEDULE,SIGNAL(sig_to_UI(QString,QVariant)),this,SLOT(slot_for_schedule(QString,QVariant)));
+    login_counter = 0;
 }
 
 /* 读取用户名 */
@@ -230,7 +231,9 @@ void CCLogin::slot_login_req()
 
 void CCLogin::slot_tick()
 {
-    printf("CCLogin::slot_tick()\n");
+    qDebug("CCLogin::slot_tick() %d ms has end\n", INTERVAL_LOGIN);
+    emit sig_process_result(6);
+    timer->stop();
 }
 
 /*********************************************************************
@@ -252,25 +255,31 @@ void CCLogin::slot_login_ack(QByteArray data)
  **/
 void CCLogin::slot_finish_select()
 {
-    printf("CCLogin::slot_finish_select\n");
-    if(QFile::exists(_tiff_file.mid(8)) && _tiff_file.endsWith(".tiff")) {
-       // printf("%s not exists\n",_tiff_file.mid(8).toStdString().c_str());
-        if(QFile::exists(_xml_file.mid(8)) && _xml_file.endsWith(".xml")) {
 
-            if(QFile::exists(_rpb_file.mid(8)) && _rpb_file.endsWith(".rpb")) {
-                QDir msdir(_save_dir.mid(8));
+    qDebug("CCLogin::slot_finish_select\n");
+    qDebug("tiff file: %s \n",_tiff_file.toStdString().c_str());
+    qDebug("xml file: %s \n",_xml_file.toStdString().c_str());
+    qDebug("xml file: %s \n",_xml_file.toStdString().c_str());
+    qDebug("save dir: %s \n",_xml_file.toStdString().c_str());
+    if(QFile::exists(_tiff_file) && _tiff_file.endsWith(".tiff")) {
+
+        if(QFile::exists(_xml_file) && _xml_file.endsWith(".xml")) {
+
+            if(QFile::exists(_rpb_file) && _rpb_file.endsWith(".rpb")) {
+
+                QDir msdir(_save_dir);
                 if(msdir.exists()) {
                     _flag_continue = true;
                     emit sig_process_result(5);
                     // begin to process
-                    QVariantMap<QString,QVariant> qm;
+                    QMap<QString,QVariant> qm;
                     QVariant qv;
                     qm.insert(TIFF_FILE_NAME,QVariant(_tiff_file));
                     qm.insert(XML_FILE_NAME,QVariant(_xml_file));
                     qm.insert(RPB_FILE_NAME,QVariant(_rpb_file));
                     qm.insert(SAVE_DIR_NAME,QVariant(_save_dir));
                     qv = QVariant(qm);
-                    emit sig_for_schedule(IMG_PRO_START,qv);
+                    emit sig_for_schedule(REQ_IMG_PRO_START,qv);
                 }
                 else {
                     emit sig_process_result(4);
@@ -285,7 +294,6 @@ void CCLogin::slot_finish_select()
         }
     }
     else {
-       // printf("%s exists\n", _tiff_file.mid(8).toStdString().c_str());
         emit sig_process_result(1); // tiff file is not correct
     }
 }
@@ -294,31 +302,58 @@ void CCLogin::slot_finish_select()
 void CCLogin::slot_cancel_process()
 {
     qDebug("CCLogin::slot_cancel_process");
-    _flag_continue = false;
-#ifndef DQT_NO_DEBUG
-    QThread::sleep(2);
-    emit sig_process_result(6);
-#endif
 
+    QVariant q;
+    emit sig_for_schedule(REQ_IMG_PRO_CANCEL,q);
+    if(_flag_continue) {
+        qDebug("timer begin to time");
+        timer->start(INTERVAL_LOGIN);
+    }
+    _flag_continue = false;
 }
 
 void CCLogin::slot_for_schedule(QString q, QVariant s) {
     qDebug("CCLogin::slot_for_schedule");
-    QMap<QString,QVariant> qm = s.toMap();
-    if(0 == q.compare(IMG_PRO_START)) {
-        qDebug("CCLogin::slot_for_schedule, %s",IMG_PRO_START);
+    QVariantMap qvm;
+    if(0 == q.compare(RES_IMG_PRO_START)) {
+        qDebug("CCLogin::slot_for_schedule, %s",RES_IMG_PRO_START.toStdString().c_str());
     }
-    else if (0 == q.compare(IMG_PRO_STOP)) {
-        qDebug("CCLogin::slot_for_schedule, %s",IMG_PRO_STOP);
+    else if (0 == q.compare(RES_IMG_PRO_STOP)) {
+        qDebug("CCLogin::slot_for_schedule, %s",RES_IMG_PRO_STOP.toStdString().c_str());
     }
-    else if (0 == q.compare(IMG_PRO_CANCEL)) {
-        qDebug("CCLogin::slot_for_schedule, %s",IMG_PRO_CANCEL);
+    else if (0 == q.compare(RES_IMG_PRO_CANCEL)) {
+        qDebug("CCLogin::slot_for_schedule, %s",RES_IMG_PRO_CANCEL.toStdString().c_str());
+        emit sig_process_result(6);
     }
-    else if (0 == q.compare(IMG_PRO_FINISH)) {
-        qDebug("CCLogin::slot_for_schedule, %s",IMG_PRO_FINISH);
+    else if (0 == q.compare(RES_IMG_PRO_FINISH)) {
+        qDebug("CCLogin::slot_for_schedule, %s",RES_IMG_PRO_FINISH.toStdString().c_str());
         emit sig_process_result(0);
     }
-    else if (0 == q.compare(IMG_PRO_FAILED)) {
-        qDebug("CCLogin::slot_for_schedule, %s",IMG_PRO_FAILED);
+    else if (0 == q.compare(RES_IMG_PRO_FAILED)) {
+        qDebug("CCLogin::slot_for_schedule, %s",RES_IMG_PRO_FAILED.toStdString().c_str());
+    }
+}
+
+void CCLogin::slot_for_fileDialog(int s) {
+    qDebug("CCLogin::slot_for_fileDialog(%d)",s);
+    if(s == TIFF_FILEDIALOG) {
+        _tiff_file = _tiff_file.mid(DIR_BEGIN);
+        qDebug("tiff file: %s \n",_tiff_file.toStdString().c_str());
+        emit sig_select_file(TIFF_FILEDIALOG);
+    }
+    else if (s == XML_FILEDIALOG) {
+        _xml_file = _xml_file.mid(DIR_BEGIN);
+        qDebug("tiff file: %s \n",_xml_file.toStdString().c_str());
+        emit sig_select_file(XML_FILEDIALOG);
+    }
+    else if (s == RPB_FILEDIALOG) {
+        _rpb_file = _rpb_file.mid(DIR_BEGIN);
+        qDebug("tiff file: %s \n",_rpb_file.toStdString().c_str());
+        emit sig_select_file(RPB_FILEDIALOG);
+    }
+    else if (s == SDIR_FILEDIALOG) {
+        _save_dir = _save_dir.mid(DIR_BEGIN);
+        qDebug("tiff file: %s \n",_save_dir.toStdString().c_str());
+        emit sig_select_file(SDIR_FILEDIALOG);
     }
 }

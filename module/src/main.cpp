@@ -1,4 +1,3 @@
-
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include "QmlPlugin.h"
@@ -6,10 +5,9 @@
 #include <QQuickView>
 #include <QQmlContext>
 #include "Home.h"
-#include <iostream>
 int main(int argc, char *argv[])
 {
-    std::cout << "Disease control start" << std::endl;
+
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
     const AppId first = 0;
@@ -23,7 +21,6 @@ int main(int argc, char *argv[])
     return app.exec();
     viwer.show();
     return app.exec();
-
     /*
     QGuiApplication app(argc, argv);
 

@@ -9,18 +9,6 @@
 #include <QtGlobal>
 #include <QVariant>
 class ischedule;
-/*********************************************************************
-*                               登录间隔 *单位:ms
-***********************************************************************/
-#define INTERVAL_LOGIN          500
-
-/*********************************************************************
-*                             最大登录次数
-**********************************************************************/
-#define NUM_LOGIN               5
-
-/***************************记住密码标志位的有效值 ************/
-#define VALID_FLAG  1
 
 
 class CCLogin : public QObject
@@ -148,6 +136,8 @@ public:
     /************** signals for Image schedule **********************/
     void sig_for_schedule(QString q,QVariant s);
 
+    void sig_select_file(int result);
+
 public slots:
     /*********************************************************************
         *                           槽函数:登陆请求
@@ -171,6 +161,9 @@ public slots:
    /************* slot for schedule ************/
 
    void slot_for_schedule(QString q, QVariant s);
+
+   void slot_for_fileDialog(int s);
+
 private slots:
 
     /********************************************************************

@@ -1,19 +1,52 @@
 #ifndef CCBASETYPEDEFINE_H
 #define CCBASETYPEDEFINE_H
 #include <iostream>
+#include <QString>
 typedef unsigned int AppId;
 const AppId InvalidAppId = 0xffffffff;
 
-#define IMG_PRO_START "img.start"
-#define IMG_PRO_STOP "img.stop"
-#define IMG_PRO_CANCEL "img.cancel"
-#define IMG_PRO_FINISH "img.finish"
-#define IMG_PRO_FAILED "img.failed"
-#define TIFF_FILE_NAME "tiff.file.name"
-#define XML_FILE_NAME "xml.file.name"
-#define RPB_FILE_NAME "xml.file.name"
-#define SAVE_DIR_NAME "xml.file.name"
-#define FILE_EMPTY 1
+#define REQ_IMG_PRO_START       QString("img.start")
+#define REQ_IMG_PRO_STOP        QString("img.stop")
+#define REQ_IMG_PRO_CANCEL      QString("img.cancel")
+
+#define RES_IMG_PRO_START       QString("img.start")
+#define RES_IMG_PRO_STOP        QString("img.stop")
+#define RES_IMG_PRO_CANCEL      QString("img.cancel")
+#define RES_IMG_PRO_FINISH      QString("img.finish")
+#define RES_IMG_PRO_FAILED      QString("img.failed")
+
+#define RESULT_SUCESS           QString("img.sucess")
+#define RESULT_FAILED           QString("img.failed")
+#define FILE_EMPTY              QString("input.empty")
+#define TIFF_FILE_NAME          QString("tiff.file.name")
+#define XML_FILE_NAME           QString("xml.file.name")
+#define RPB_FILE_NAME           QString("xml.file.name")
+#define SAVE_DIR_NAME           QString("xml.file.name")
+
+#define TIFF_FILEDIALOG    int(1)
+#define XML_FILEDIALOG     int(2)
+#define RPB_FILEDIALOG     int(3)
+#define SDIR_FILEDIALOG    int(4)
+
+
+#ifdef WIN32
+#define DIR_BEGIN   8
+#else
+#define DIR_BEGIN   7
+#endif
+/*********************************************************************
+*                               登录间隔 *单位:ms
+***********************************************************************/
+#define INTERVAL_LOGIN     int(10000)
+
+/*********************************************************************
+*                             最大登录次数
+**********************************************************************/
+#define NUM_LOGIN               5
+
+/***************************记住密码标志位的有效值 ************/
+#define VALID_FLAG  1
+
 
 #define assert(exp) { if (!(exp)) { std::cout << "Assertion failed: " << #exp << "\n" << "line: " << __LINE__ << "\n" << "file: " << __FILE__ << "\n";exit(EXIT_FAILURE); } }
 #endif // CCBASETYPEDEFINE_H

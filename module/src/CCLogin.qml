@@ -63,15 +63,15 @@ Rectangle {
                 //close process AnimatedImage
                 process_gif.opacity = 0
                 // btn active
-                textInput1.readOnly = false
-                textInput2.readOnly = false
-                textInput3.readOnly = false
-                textInput4.readOnly = false
-                tiffselectbtn1.activeFocusOnPress = true
-                tiffselectbtn2.activeFocusOnPress = true
-                tiffselectbtn3.activeFocusOnPress = true
-                tiffselectbtn4.activeFocusOnPress = true
-                precessbtn.activeFocusOnPress = false
+                textInput1.enabled = true
+                textInput2.enabled = true
+                textInput3.enabled = true
+                textInput4.enabled = true
+                tiffselectbtn1.enabled = true
+                tiffselectbtn2.enabled = true
+                tiffselectbtn3.enabled = true
+                tiffselectbtn4.enabled = true
+                precessbtn.enabled = true
                 messageDialog.text = "处理完成"
                 messageDialog.visible = true
                 break;
@@ -99,15 +99,15 @@ Rectangle {
                 // set process flag false
                 processflag = true
                 // btn disable
-                precessbtn.activeFocusOnPress = false
-                tiffselectbtn1.activeFocusOnPress = false
-                tiffselectbtn2.activeFocusOnPress = false
-                tiffselectbtn3.activeFocusOnPress = false
-                tiffselectbtn4.activeFocusOnPress = false
-                textInput1.readOnly = true
-                textInput2.readOnly = true
-                textInput3.readOnly = true
-                textInput4.readOnly = true
+                precessbtn.enabled = false
+                tiffselectbtn1.enabled = false
+                tiffselectbtn2.enabled = false
+                tiffselectbtn3.enabled = false
+                tiffselectbtn4.enabled = false
+                textInput1.enabled = false
+                textInput2.enabled = false
+                textInput3.enabled = false
+                textInput4.enabled = false
                 // open process AnimatedImage
                 process_gif.opacity = 1
                 break;
@@ -118,23 +118,41 @@ Rectangle {
                 //close process AnimatedImage
                 process_gif.opacity = 0
                 // btn active
-                textInput1.readOnly = false
-                textInput2.readOnly = false
-                textInput3.readOnly = false
-                textInput4.readOnly = false
-                tiffselectbtn1.activeFocusOnPress = true
-                tiffselectbtn2.activeFocusOnPress = true
-                tiffselectbtn3.activeFocusOnPress = true
-                tiffselectbtn4.activeFocusOnPress = true
-                precessbtn.activeFocusOnPress = false
+                textInput1.enabled = true
+                textInput2.enabled = true
+                textInput3.enabled = true
+                textInput4.enabled = true
+                tiffselectbtn1.enabled = true
+                tiffselectbtn2.enabled = true
+                tiffselectbtn3.enabled = true
+                tiffselectbtn4.enabled = true
+                precessbtn.enabled = true
                 messageDialog.text = "取消成功"
                 messageDialog.visible = true
-                cclogin.slot_cancel_process()
+                //cclogin.slot_cancel_process()
                 break
             }
         }
-    }
 
+        onSig_select_file:
+        {
+            switch (result)
+            {
+            case 1:
+                textInput1.text = file_tiff
+                break;
+            case 2:
+                textInput2.text = file_xml
+                break;
+            case 3:
+                textInput3.text = file_rpb
+                break;
+            case 4:
+                textInput4.text = save_dir
+                break;
+            }
+        }
+    }
     MouseArea {
         id: mouseArea
         anchors.rightMargin: 0
@@ -373,6 +391,7 @@ Rectangle {
                 y: 80
                 width: 300
                 height: 40
+                readOnly: false
                 placeholderText: "Select \".tiff \" file"
                 font.pixelSize: 12
             }
@@ -400,7 +419,7 @@ Rectangle {
                 visible: false
                 onAccepted: {
                     cclogin.file_tiff = fileDialog1.fileUrl
-                    textInput1.text = fileDialog1.fileUrl
+                    cclogin.slot_for_fileDialog(1);
                     fileDialog1.visible = false;
                 }
                 onRejected: {
@@ -429,6 +448,7 @@ Rectangle {
                 y: 140
                 width: 300
                 height: 40
+                readOnly: false
                 placeholderText: "Select \".xml \" file"
                 font.pixelSize: 12
             }
@@ -455,7 +475,8 @@ Rectangle {
                 visible: false
                 onAccepted: {
                     cclogin.file_xml = fileDialog2.fileUrl
-                    textInput2.text = fileDialog2.fileUrl
+               //     textInput2.text = fileDialog2.fileUrl
+                    cclogin.slot_for_fileDialog(2);
                     fileDialog2.visible = false;
                 }
                 onRejected: {
@@ -484,6 +505,7 @@ Rectangle {
                 y: 200
                 width: 300
                 height: 40
+                readOnly: false
                 placeholderText: "Select \".rpb \" file"
                 font.pixelSize: 12
             }
@@ -510,7 +532,8 @@ Rectangle {
                 selectFolder:false
                 onAccepted: {
                     cclogin.file_rpb = fileDialog3.fileUrl
-                    textInput3.text = fileDialog3.fileUrl
+              //      textInput3.text = fileDialog3.fileUrl
+                    cclogin.slot_for_fileDialog(3);
                     fileDialog3.visible = false;
                 }
                 onRejected: {
@@ -539,6 +562,7 @@ Rectangle {
                 y: 260
                 width: 300
                 height: 40
+                readOnly: false
                 placeholderText: "Select output directory"
                 font.pixelSize: 12
             }
@@ -565,7 +589,8 @@ Rectangle {
                 selectFolder:true
                 onAccepted: {
                     cclogin.save_dir = fileDialog4.fileUrl
-                    textInput4.text = fileDialog4.fileUrl
+              //      textInput4.text = fileDialog4.fileUrl
+                    cclogin.slot_for_fileDialog(4);
                     fileDialog4.visible = false;
                 }
                 onRejected: {
