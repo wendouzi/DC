@@ -15,8 +15,8 @@ if(EXISTS ${GDAL_ROOT})
                              /usr/lib64/hdf/libmfhdf.a
             )
     else()
-        set(GDAL_INCLUDE_DIR  ${GDAL_ROOT}/win64/include)
-        set(GDAL_LIBRARIES    ${GDAL_ROOT}/win64/lib/gdal_i.lib
+        set(GDAL_INCLUDE_DIR  ${GDAL_ROOT}/win32/include)
+        set(GDAL_LIBRARIES    ${GDAL_ROOT}/win32/lib/gdal_i.lib
             #           ${GDAL_ROOT}/win64/runtime/hm426m.lib
             #            ${GDAL_ROOT}/win64/runtime/geos_c_i.lib
             #${GDAL_ROOT}/win64/runtime/hdf5_hldll.lib

@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/res">
-        <file>CCLogin.qml</file>
-        <file>Home.qml</file>
-        <file>HomePage.qml</file>
-    </qresource>
-</RCC>

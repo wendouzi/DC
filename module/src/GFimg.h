@@ -26,10 +26,17 @@
 #define RATIO43_WATERINDEX (3.5)
 #define RATIO43_MIN (-5)
 #define RATIO43_MAX (5)
+
+#ifdef WIN32
+#define DIR_SEPERATOR "\\"
+#else
+#define DIR_SEPERATOR "/"
+#endif
     enum Method 
     {
         withoutDist = 0,
-        withDist_1
+        withDist_1,
+        SVI_DIST
     };
     enum write_var
     {
@@ -61,6 +68,7 @@ class GFimg
         int SensorType;
         std::string xmlfile;
         std::string rpbfile;
+        std::string savedir;
         float tllat,tllong,trlat,trlong,bllat,bllong,brlat,brlong;
         float * band1;
         float * band2;
@@ -93,9 +101,11 @@ class GFimg
 
 
     public:
-        GFimg(const std::string & _filename, const int & _SensorType,
-               const  std::string _xmlfile, const std::string _rpbfile
-                );
+        GFimg(const std::string  _filename,
+                const  std::string _xmlfile,
+                const std::string _rpbfile,
+                const std::string savedir,
+                const int  _SensorType = 0);
         ~GFimg();
         void init();        
         void getNDVI();

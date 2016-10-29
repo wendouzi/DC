@@ -2,6 +2,7 @@
 #define CCBASETYPEDEFINE_H
 #include <iostream>
 #include <QString>
+#define VERSION  QString("1.0")
 typedef unsigned int AppId;
 const AppId InvalidAppId = 0xffffffff;
 
@@ -20,8 +21,8 @@ const AppId InvalidAppId = 0xffffffff;
 #define FILE_EMPTY              QString("input.empty")
 #define TIFF_FILE_NAME          QString("tiff.file.name")
 #define XML_FILE_NAME           QString("xml.file.name")
-#define RPB_FILE_NAME           QString("xml.file.name")
-#define SAVE_DIR_NAME           QString("xml.file.name")
+#define RPB_FILE_NAME           QString("rpb.file.name")
+#define SAVE_DIR_NAME           QString("save.dir.name")
 
 #define TIFF_FILEDIALOG    int(1)
 #define XML_FILEDIALOG     int(2)

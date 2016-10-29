@@ -9,33 +9,36 @@
 #include "GFimg.h"
 #include "config.h"
 
-GFimg::GFimg(const std::string & _filename, const int & _SensorType,
-       const std::string _xmlfile, const std::string _rpbfile
-        )
+GFimg::GFimg(const std::string  _filename,
+            const std::string _xmlfile,
+             const std::string _rpbfile,
+             const std::string _savedir,
+             const int  _SensorType)
+            : filename(_filename)
+            , xmlfile(_xmlfile)
+            , rpbfile(_rpbfile)
+            , savedir(_savedir)
+            ,SensorType(_SensorType)
+            , band1(NULL)
+            , band2(NULL)
+            , band3(NULL)
+            , band4(NULL)
+            , ndvi(NULL)
+            , ndwi(NULL)
+            , wi(NULL)
+            , svi(NULL)
+            , bright(NULL)
+            , green(NULL)
+            , wet(NULL)
+            , dis(NULL)
+            , isShade(NULL)
+            , distance(NULL)
+            , latitude(NULL)
+            , longitude(NULL)
+            , width(-1)
+            , height(-1)
 {
-    filename = _filename;
-    SensorType = _SensorType;
-    xmlfile = _xmlfile;
-    rpbfile = _rpbfile;
-    band1 = NULL;
-    band2 = NULL;
-    band3 = NULL;
-    band4 = NULL;
-    ndvi = NULL;
-    ndwi = NULL;
-    wi = NULL;
-    svi = NULL;
-    bright = NULL;
-    green = NULL;
-    wet = NULL;
-    dis = NULL;
-    isShade = NULL;
-    distance= NULL;
-    density = NULL;
-    latitude = NULL;
-    longitude = NULL;
-    width = -1;
-    height = -1;
+    printf("GFimg::GFimg(), constructor");
 }
 
 void GFimg::init()
@@ -592,6 +595,7 @@ void GFimg::caldensity(Method me)
             density[i] = 1.04525 - 8.41716* wet + 1.919549 * ndvi + 0.014895 * bright - 0.00146*4*distance[i];
       //  density[i] = 1.04525 - 8.41716* wet[i] + 1.919549 * ndvi[i] + 0.014895 * bright[i] - 0.00146 * dis[i];
         }
+
         write(var_density,"density_1.tiff"); 
     }else if (me == withDist_1)
     {
@@ -626,6 +630,18 @@ void GFimg::caldensity(Method me)
      //   getSVI();
      //   write(var_svi,"svi.tiff");
      //   write(var_reflectance,"reflectance.tiff");
+    }
+    else if (me == SVI_DIST) {
+        if(svi == NULL) { getSVI();}
+        write(var_svi,"svi.tiff");
+        if (distance == NULL ) {
+            getDistance2water(Water2Pixel); 
+        }
+        for ( int i = 0; i < width * height ; i++)
+        {
+            density[i] = 100*svi[i] - distance[i]/ 200;
+       }
+        write(var_density,"density2.tiff");
     }
 }
 
@@ -872,7 +888,6 @@ void GFimg::readGeoinfo(std::string geofile)
     }
     geoinfo =(float *) malloc(sizeof(float)*4 * insituPoints);
     count = 0;
-    float ap[4];
     while(ifile.getline(buf,sizeof(buf)))
     {
  //       printf("%s\n",buf);
@@ -1016,6 +1031,7 @@ int GFimg::geo2num(float num1, float num2, int hw, float num3)
 
 void GFimg::write(write_var var,std::string sfile)
 {
+    std::string tempsfile = this->savedir + DIR_SEPERATOR + sfile;
     // save the ndvi variable
     if ( var == var_ndvi )
     {
@@ -1030,7 +1046,7 @@ void GFimg::write(write_var var,std::string sfile)
             return;
         }
         char **papszOptions = NULL; 
-        GDALDataset *WriteDataSet = poDriver->Create(sfile.c_str(), width,height,1,GDT_Float32,papszOptions);
+        GDALDataset *WriteDataSet = poDriver->Create(tempsfile.c_str(), width,height,1,GDT_Float32,papszOptions);
         int poBandMap[1] ={1};
         if(WriteDataSet->RasterIO(GF_Write,0,0,width,height,ndvi,width,height,GDT_Float32,1,poBandMap,0,0,0)==CE_Failure)
         {
@@ -1054,7 +1070,7 @@ void GFimg::write(write_var var,std::string sfile)
             return;
         }
         char **papszOptions = NULL; 
-        GDALDataset *WriteDataSet = poDriver->Create(sfile.c_str(), width,height,1,GDT_Float32,papszOptions);
+        GDALDataset *WriteDataSet = poDriver->Create(tempsfile.c_str(), width,height,1,GDT_Float32,papszOptions);
         int poBandMap[1] ={1};
         if(WriteDataSet->RasterIO(GF_Write,0,0,width,height,distance,width,height,GDT_Float32,1,poBandMap,0,0,0)==CE_Failure)
         {
@@ -1077,7 +1093,7 @@ void GFimg::write(write_var var,std::string sfile)
             return;
         }
         char **papszOptions = NULL; 
-        GDALDataset *WriteDataSet = poDriver->Create(sfile.c_str(), width,height,1,GDT_Float32,papszOptions);
+        GDALDataset *WriteDataSet = poDriver->Create(tempsfile.c_str(), width,height,1,GDT_Float32,papszOptions);
         int poBandMap[1] ={1};
         if(WriteDataSet->RasterIO(GF_Write,0,0,width,height,density,width,height,GDT_Float32,1,poBandMap,0,0,0)==CE_Failure)
         {
@@ -1099,7 +1115,7 @@ void GFimg::write(write_var var,std::string sfile)
             return;
         }
         char **papszOptions = NULL; 
-        GDALDataset *WriteDataSet = poDriver->Create(sfile.c_str(), width,height,1,GDT_Float32,papszOptions);
+        GDALDataset *WriteDataSet = poDriver->Create(tempsfile.c_str(), width,height,1,GDT_Float32,papszOptions);
         int poBandMap[1] ={1};
         if(WriteDataSet->RasterIO(GF_Write,0,0,width,height,ndwi,width,height,GDT_Float32,1,poBandMap,0,0,0)==CE_Failure)
         {
@@ -1122,7 +1138,7 @@ void GFimg::write(write_var var,std::string sfile)
             return;
         }
         char **papszOptions = NULL; 
-        GDALDataset *WriteDataSet = poDriver->Create(sfile.c_str(), width,height,1,GDT_Float32,papszOptions);
+        GDALDataset *WriteDataSet = poDriver->Create(tempsfile.c_str(), width,height,1,GDT_Float32,papszOptions);
         int poBandMap[1] ={1};
         if(WriteDataSet->RasterIO(GF_Write,0,0,width,height,wet,width,height,GDT_Float32,1,poBandMap,0,0,0)==CE_Failure)
         {
@@ -1144,7 +1160,7 @@ void GFimg::write(write_var var,std::string sfile)
             return;
         }
         char **papszOptions = NULL; 
-        GDALDataset *WriteDataSet = poDriver->Create(sfile.c_str(), width,height,1,GDT_Float32,papszOptions);
+        GDALDataset *WriteDataSet = poDriver->Create(tempsfile.c_str(), width,height,1,GDT_Float32,papszOptions);
         int poBandMap[1] ={1};
         if(WriteDataSet->RasterIO(GF_Write,0,0,width,height,svi,width,height,GDT_Float32,1,poBandMap,0,0,0)==CE_Failure)
         {
@@ -1166,26 +1182,26 @@ void GFimg::write(write_var var,std::string sfile)
             return;
         }
         char **papszOptions = NULL; 
-        std::string b1file = "band1"+sfile;
+        std::string b1file = this->savedir + DIR_SEPERATOR+ "band1"+sfile;
         GDALDataset *WriteDataSet1 = poDriver->Create(b1file.c_str(), width,height,1,GDT_Float32,papszOptions);
         int poBandMap[1] ={1};
         if(WriteDataSet1->RasterIO(GF_Write,0,0,width,height,band1,width,height,GDT_Float32,1,poBandMap,0,0,0)==CE_Failure)
         {
             printf("write band1 failed.\n");
         }
-        std::string b2file = "band2"+sfile;
+        std::string b2file =this->savedir + DIR_SEPERATOR+ "band2"+sfile;
         GDALDataset *WriteDataSet2 = poDriver->Create(b2file.c_str(), width,height,1,GDT_Float32,papszOptions);
         if(WriteDataSet2->RasterIO(GF_Write,0,0,width,height,band2,width,height,GDT_Float32,1,poBandMap,0,0,0)==CE_Failure)
         {
             printf("write band2 failed.\n");
         }
-        std::string b3file = "band3"+sfile;
+        std::string b3file =this->savedir + DIR_SEPERATOR+ "band3"+sfile;
         GDALDataset *WriteDataSet3 = poDriver->Create(b3file.c_str(), width,height,1,GDT_Float32,papszOptions);
         if(WriteDataSet3->RasterIO(GF_Write,0,0,width,height,band3,width,height,GDT_Float32,1,poBandMap,0,0,0)==CE_Failure)
         {
             printf("write band3 failed.\n");
         }
-        std::string b4file = "band4"+sfile;
+        std::string b4file = this->savedir + DIR_SEPERATOR+"band4"+sfile;
         GDALDataset *WriteDataSet4 = poDriver->Create(b4file.c_str(), width,height,1,GDT_Float32,papszOptions);
         if(WriteDataSet4->RasterIO(GF_Write,0,0,width,height,band4,width,height,GDT_Float32,1,poBandMap,0,0,0)==CE_Failure)
         {
@@ -1209,7 +1225,7 @@ void GFimg::write(write_var var,std::string sfile)
             return;
         }
         char **papszOptions = NULL; 
-        GDALDataset *WriteDataSet = poDriver->Create(sfile.c_str(), width,height,1,GDT_Float32,papszOptions);
+        GDALDataset *WriteDataSet = poDriver->Create(tempsfile.c_str(), width,height,1,GDT_Float32,papszOptions);
         int poBandMap[1] ={1};
         if(WriteDataSet->RasterIO(GF_Write,0,0,width,height,isShade,width,height,GDT_Float32,1,poBandMap,0,0,0)==CE_Failure)
         {
@@ -1220,19 +1236,20 @@ void GFimg::write(write_var var,std::string sfile)
     
     }else
     {
-    
+        printf("unknown save type");
     }
 
 }
 
 void GFimg::extractValueByFile(std::string geofile, std::string savefile)
 {
+    std::string tempsavefile = this->savedir + DIR_SEPERATOR + savefile;
     printf("extractValueByFile...\n");
     readGeoinfo(geofile);
-    std::ofstream ofile(savefile.c_str());
+    std::ofstream ofile(tempsavefile.c_str());
     if(!ofile.is_open())
     {
-        printf("failed to open the savefile:%s\n",savefile.c_str());exit(1);
+        printf("failed to open the savefile:%s\n",tempsavefile.c_str());exit(1);
     }
     for(int count = 0; count < insituPoints ; count++)
     {

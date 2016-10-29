@@ -4,6 +4,10 @@ Window {
     visible: true
     width:800
     height:400
+    minimumHeight: 400
+    maximumHeight: 400
+    minimumWidth: 800
+    maximumWidth: 800
     title: "Disease Control Image Process System"
 
     CCLogin {

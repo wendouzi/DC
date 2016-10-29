@@ -259,8 +259,8 @@ void CCLogin::slot_finish_select()
     qDebug("CCLogin::slot_finish_select\n");
     qDebug("tiff file: %s \n",_tiff_file.toStdString().c_str());
     qDebug("xml file: %s \n",_xml_file.toStdString().c_str());
-    qDebug("xml file: %s \n",_xml_file.toStdString().c_str());
-    qDebug("save dir: %s \n",_xml_file.toStdString().c_str());
+    qDebug("rpb file: %s \n",_rpb_file.toStdString().c_str());
+    qDebug("save dir: %s \n",_save_dir.toStdString().c_str());
     if(QFile::exists(_tiff_file) && _tiff_file.endsWith(".tiff")) {
 
         if(QFile::exists(_xml_file) && _xml_file.endsWith(".xml")) {
@@ -338,6 +338,20 @@ void CCLogin::slot_for_fileDialog(int s) {
     qDebug("CCLogin::slot_for_fileDialog(%d)",s);
     if(s == TIFF_FILEDIALOG) {
         _tiff_file = _tiff_file.mid(DIR_BEGIN);
+        QString temp_xml_file = _tiff_file;
+        QString temp_rpb_file = _tiff_file;
+        temp_xml_file.replace(".tiff",".xml");
+        temp_rpb_file.replace(".tiff",".rpb");
+        if (QFile::exists(temp_xml_file)) {
+            _xml_file = temp_xml_file;
+            qDebug("xml file: %s \n",_xml_file.toStdString().c_str());
+            emit sig_select_file(XML_FILEDIALOG);
+        }
+        if (QFile::exists(temp_rpb_file)) {
+            _rpb_file = temp_rpb_file;
+            qDebug("rpb file: %s \n",_rpb_file.toStdString().c_str());
+            emit sig_select_file(RPB_FILEDIALOG);
+        }
         qDebug("tiff file: %s \n",_tiff_file.toStdString().c_str());
         emit sig_select_file(TIFF_FILEDIALOG);
     }

@@ -7,7 +7,7 @@ endif()
 include(cmake/FindGDAL.cmake)
 
 message("FindQt begin")
-set(CMAKE_PREFIX_PATH ${WORKSPACE}/../../Qt/Qt5.4.0/5.4/msvc2013_64)
+set(CMAKE_PREFIX_PATH ${WORKSPACE}/../../Qt/Qt5.4.0/5.4/msvc2013)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD 14)
 find_package(Qt5Widgets)

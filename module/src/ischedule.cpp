@@ -64,7 +64,7 @@ void ischedule::slot_for_UI(QString q,QVariant s) {
 
 void ischedule::img_process_begin() {
     qDebug("ischedule::img_process_begin");
-    emit sig_to_imgcontrol(m_ftiff, m_frpb, m_fxml, m_dsave);
+    emit sig_to_imgcontrol(m_ftiff, m_fxml, m_frpb, m_dsave);
 }
 
 void ischedule::slot_for_imgcontrol(QString s) {

@@ -185,24 +185,41 @@ Rectangle {
         width: 800
         height: 400
     Text {
-        id: welcome
-        x:70
-        y:50
-        width: 388
-        height: 35
-      //  anchors.centerIn: parent
-       // text: "Welcome to the Disease Control Image Processing System"
-        text:qsTr("欢迎来到中国疾病控制预防中心遥感图像处理系统")
+        id: titleCN
+        x:220
+        y:30
+        width: 100
+        height: 18
+        text:qsTr("    中 国 疾 病 控 制 预 防 中 心   ")
         font.pointSize: 16
         style: Text.Raised
-        font.italic: true
-    //    horizontalAlignment: Text.AlignHCenter
-   //     verticalAlignment: Text.AlignVCenter
-   //     font.pixelSize: 15
-  //      anchors.verticalCenterOffset: -151
-  //      anchors.horizontalCenterOffset: -85
+        font.bold: true
+        //font.italic: true
     }
-
+    Text {
+        id: titleLine
+        x:220
+        y:50
+        width: 100
+        height: 10
+        text:qsTr("======================================================================")
+        font.pointSize: 8
+        style: Text.Raised
+        //font.italic: true
+    }
+    Text {
+        id: titleEN
+        x:220
+        y:65
+        width: 100
+        height: 15
+        text:qsTr("CHINESE CENTER FOR DISEASE CONTROL ADN PREVENTION")
+        font.pointSize: 12
+        style: Text.Raised
+        font.family: "Times"
+        font.bold: true
+        //font.italic: true
+    }
     Text {
         id: txtsignin
         x: 256
@@ -274,7 +291,7 @@ Rectangle {
         y: 236
         width: 235
         height: 32
-        text: qsTr("登录")
+        text: qsTr("   登    录   ")
         checkable: false
         antialiasing: false
         z: 0
@@ -284,6 +301,34 @@ Rectangle {
         activeFocusOnPress: true
         onClicked: trylogin()
     }
+    Item {
+        Text {
+            id: introduction
+            x:470
+            y:100
+            width: 300
+            height: 280
+            text:qsTr(" 血吸虫病是一种严重危害人类健康的疾病，钉螺是在我国流行的日本血吸虫唯一的中间宿主，消灭钉螺是阻断血吸虫病传播的最有效措施。高分影像能够实时地提供地表的有效地物信息、并可进行综合分析，为快速确定钉螺可孽生的位置、面积及扩散趋势提供了重要的监测手段。")
+            font.pixelSize: 20
+            style: Text.Raised
+            wrapMode: Text.Wrap
+            lineHeight: 1.2
+        }
+        Text {
+            id: copyright
+            x:80
+            y:370
+            width: 600
+            height: 25
+            text:qsTr("Copyright © 2016 Powered By Chinese Center for Disease Control and Prevention. All rights reserved.")
+            font.pixelSize: 14
+            style: Text.Raised
+            opacity: 0.5
+        }
+    }
+
+
+
     }
     //消息框
 
@@ -346,10 +391,10 @@ Rectangle {
             width: 480
             height: 40
           //  anchors.centerIn: parent
-            text: "请选择高分影响和保存路径"
-            font.pointSize: 16
+            text: "请选择高分影像和输出路径"
+            font.pixelSize: 20
             style: Text.Raised
-            font.italic: true
+           // font.italic: true
         //    horizontalAlignment: Text.AlignHCenter
        //     verticalAlignment: Text.AlignVCenter
        //     font.pixelSize: 15
