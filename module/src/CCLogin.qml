@@ -2,6 +2,7 @@
 import QtQuick 2.1
 import Enginio 1.0
 import QtQuick.Controls 1.0
+import QtQuick.Controls.Styles 1.3
 import QtQuick.Layouts 1.0
 import CCLogin 1.0
 import QtQuick.Dialogs 1.1
@@ -67,6 +68,7 @@ Rectangle {
                 textInput2.enabled = true
                 textInput3.enabled = true
                 textInput4.enabled = true
+                outputproducts.enabled = true
                 tiffselectbtn1.enabled = true
                 tiffselectbtn2.enabled = true
                 tiffselectbtn3.enabled = true
@@ -96,7 +98,7 @@ Rectangle {
                 messageDialog.visible = true
                 break;
             case 5:
-                // set process flag false
+                // set process flag true
                 processflag = true
                 // btn disable
                 precessbtn.enabled = false
@@ -104,6 +106,7 @@ Rectangle {
                 tiffselectbtn2.enabled = false
                 tiffselectbtn3.enabled = false
                 tiffselectbtn4.enabled = false
+                outputproducts.enabled = false
                 textInput1.enabled = false
                 textInput2.enabled = false
                 textInput3.enabled = false
@@ -393,6 +396,7 @@ Rectangle {
           //  anchors.centerIn: parent
             text: "请选择高分影像和输出路径"
             font.pixelSize: 20
+            font.bold: true
             style: Text.Raised
            // font.italic: true
         //    horizontalAlignment: Text.AlignHCenter
@@ -420,8 +424,8 @@ Rectangle {
 
             Text {
                 id: text1
-                x: 160
-                y: 80
+                x: 80
+                y: 60
                 width: 80
                 height: 40
                 verticalAlignment: Text.AlignVCenter
@@ -432,8 +436,8 @@ Rectangle {
             }
             TextField {
                 id: textInput1
-                x: 250
-                y: 80
+                x: 170
+                y: 60
                 width: 300
                 height: 40
                 readOnly: false
@@ -442,8 +446,8 @@ Rectangle {
             }
             Button {
                 id: tiffselectbtn1
-                x: 560
-                y: 80
+                x: 480
+                y: 60
                 width: 80
                 height: 40
                 text: qsTr("...")
@@ -477,8 +481,8 @@ Rectangle {
 
             Text {
                 id: text2
-                x: 160
-                y: 140
+                x: 80
+                y: 120
                 width: 80
                 height: 40
                 verticalAlignment: Text.AlignVCenter
@@ -489,8 +493,8 @@ Rectangle {
             }
             TextField {
                 id: textInput2
-                x: 250
-                y: 140
+                x: 170
+                y: 120
                 width: 300
                 height: 40
                 readOnly: false
@@ -499,8 +503,8 @@ Rectangle {
             }
             Button {
                 id: tiffselectbtn2
-                x: 560
-                y: 140
+                x: 480
+                y: 120
                 width: 80
                 height: 40
                 text: qsTr("...")
@@ -534,8 +538,8 @@ Rectangle {
 
             Text {
                 id: text3
-                x: 160
-                y: 200
+                x: 80
+                y: 180
                 width: 80
                 height: 40
                 verticalAlignment: Text.AlignVCenter
@@ -546,8 +550,8 @@ Rectangle {
             }
             TextField {
                 id: textInput3
-                x: 250
-                y: 200
+                x: 170
+                y: 180
                 width: 300
                 height: 40
                 readOnly: false
@@ -556,8 +560,8 @@ Rectangle {
             }
             Button {
                 id: tiffselectbtn3
-                x: 560
-                y: 200
+                x: 480
+                y: 180
                 width: 80
                 height: 40
                 text: qsTr("...")
@@ -591,8 +595,8 @@ Rectangle {
 
             Text {
                 id: text4
-                x: 160
-                y: 260
+                x: 80
+                y: 240
                 width: 80
                 height: 40
                 verticalAlignment: Text.AlignVCenter
@@ -603,8 +607,8 @@ Rectangle {
             }
             TextField {
                 id: textInput4
-                x: 250
-                y: 260
+                x: 170
+                y: 240
                 width: 300
                 height: 40
                 readOnly: false
@@ -613,8 +617,8 @@ Rectangle {
             }
             Button {
                 id: tiffselectbtn4
-                x: 560
-                y: 260
+                x: 480
+                y: 240
                 width: 80
                 height: 40
                 text: qsTr("...")
@@ -643,13 +647,99 @@ Rectangle {
                 }
             }
         }
+        Component{
+            id: checkStyle
+            CheckBoxStyle{
+                indicator: Rectangle{
+                    implicitWidth: 18;
+                    implicitHeight: 18;
+                    border.color: control.hovered? "darkblue":"gray";
+                    border.width: 1;
+                    Canvas{
+                        anchors.fill: parent;
+                        anchors.margins: 3;
+                        visible: control.checked;
+                        onPaint: {
+
+                            var ctx = getContext("2d");
+                            ctx.save();
+                            ctx.strokeStyle = "#c00020";
+                            ctx.lineWidth = 2;
+                            ctx.beginPath();
+                            ctx.moveTo(0,height/2);
+                            ctx.lineTo(width/3 , height);
+                            //ctx.moveTo(0 , height);
+                            ctx.lineTo(width , 0);
+                            ctx.stroke();
+                            ctx.restore();
+                        }
+                    }
+                }
+
+
+                label: Text{
+                    color: control.checked ?"blue":"black";
+                    text: control.text;
+
+                }
+
+            }
+        }
+        Row {
+            id: outputproducts
+            x: 100
+            y: 300
+            width: 400
+            height: 40
+            spacing: 4
+            CheckBox {
+                text: qsTr("NDVI")
+                style: checkStyle
+                checked: false
+            }
+            CheckBox {
+                text: qsTr("NDWI")
+                style: checkStyle
+                checked: false
+            }
+            CheckBox {
+                text: qsTr("SVI")
+                style: checkStyle
+                checked: true
+            }
+            CheckBox {
+                text: qsTr("与水距离")
+                style: checkStyle
+                checked: true
+            }
+            CheckBox {
+                text: qsTr("KT-bright")
+                style: checkStyle
+                checked: false
+            }
+            CheckBox {
+                text: qsTr("KT-wet")
+                style: checkStyle
+                checked: false
+            }
+            CheckBox {
+                text: qsTr("KT-green")
+                style: checkStyle
+                checked: false
+            }
+            CheckBox {
+                text: qsTr("血吸虫分布")
+                style: checkStyle
+                checked: true
+            }
+        }
         Button {
             id: precessbtn
-            x: 400
+            x: 640
             y: 320
-            width: 200
+            width: 120
             height: 40
-            text: qsTr("OK")
+            text: qsTr("开始处理")
             checkable: false
             antialiasing: false
             z: 0
@@ -659,7 +749,7 @@ Rectangle {
             activeFocusOnPress: true    
             //onClicked: tryfinishselect()
             onClicked: tryfinishselect()
-            opacity: 0.5
+            opacity: 1
         }
         Button {
             id: cancelbtn
@@ -667,7 +757,7 @@ Rectangle {
             y: 100
             width: 80
             height: 40
-            text: qsTr("Cancel")
+            text: qsTr("取消")
             checkable: false
             antialiasing: false
             z: 0
@@ -675,9 +765,88 @@ Rectangle {
             scale: 1
             clip: false
             activeFocusOnPress: true
-            visible: processflag
+            //visible: processflag
+            visible : false
             onClicked:cclogin.slot_cancel_process()
         }
+        Button {
+            id: beforepreviewbtn
+            x: 680
+            y: 60
+            width: 80
+            height: 40
+            text: qsTr("预览")
+            checkable: false
+            antialiasing: false
+            z: 0
+            rotation: 0
+            scale: 1
+            clip: false
+            activeFocusOnPress: true
+            //visible: processflag
+            visible : true
+            enabled: false
+            //onClicked:{}
+        }
+        Button {
+            id: afterpreviewbtn
+            x: 680
+            y: 120
+            width: 80
+            height: 40
+            text: qsTr("结果预览")
+            checkable: false
+            antialiasing: false
+            z: 0
+            rotation: 0
+            scale: 1
+            clip: false
+            activeFocusOnPress: true
+            //visible: processflag
+            visible : true
+            enabled: false
+            //onClicked:{}
+        }
+        Button {
+            id: comparepreviewbtn
+            x: 680
+            y: 180
+            width: 80
+            height: 40
+            text: qsTr("影像对比")
+            checkable: false
+            antialiasing: false
+            z: 0
+            rotation: 0
+            scale: 1
+            clip: false
+            activeFocusOnPress: true
+            //visible: processflag
+            visible : true
+            enabled: false
+            //onClicked:{}
+        }
+        Button {
+            id: poiselectbtn
+            x: 680
+            y: 240
+            width: 80
+            height: 40
+            text: qsTr("POI统计")
+            checkable: false
+            antialiasing: false
+            z: 0
+            rotation: 0
+            scale: 1
+            clip: false
+            activeFocusOnPress: true
+            //visible: processflag
+            visible : true
+            enabled: false
+            //onClicked:{}
+        }
+
+
     }
     //登陆动画
     AnimatedImage

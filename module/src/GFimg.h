@@ -10,12 +10,13 @@
 #include <vector>
 #include <string>
 #include "geoshape.h"
+#include <utility>
 #define ST_WFV1 0 // SensorType WFV1
 #define ST_WFV2 1 // SensorType WFV2
 #define ST_WFV3 2 // SensorType WFV3
 #define ST_WFV4 3 // SensorType WFV4
 #define RESOLUTION 8
-#define NEAR_POINTS_NUM 300
+#define NEAR_POINTS_NUM 100
 #define FILLVALUE 1000
 #define WATERFILLVALUE 0
 #define NDVI_WATERINDEX (-0.1)
@@ -27,7 +28,7 @@
 #define RATIO43_MIN (-5)
 #define RATIO43_MAX (5)
 
-#ifdef WIN32
+#ifdef __WINDOWS_
 #define DIR_SEPERATOR "\\"
 #else
 #define DIR_SEPERATOR "/"
@@ -36,7 +37,8 @@
     {
         withoutDist = 0,
         withDist_1,
-        SVI_DIST
+        SVI_DIST,
+        TEST_CASE
     };
     enum write_var
     {
@@ -52,8 +54,20 @@
     enum DistAlgo
     {
         Pixel2Water = 0,
-        Water2Pixel  
+        Water2Pixel,
+        POI_SVI_DIST
     };
+    enum print_var
+    {
+        print_reflectance = 0,
+        print_ndvi,
+        print_nd,
+        print_ndwi,
+        print_svi,
+        print_distance,
+        print_density
+    };
+
 struct NearBody {
     bool up;
     bool down;
@@ -95,6 +109,8 @@ class GFimg
         int height;
 //        std::vector<vector<int>> colrow;
         std::vector<int> i_colrow;
+        std::pair<int, int> _leftup;
+        std::pair<int, int> _rightdown;
        // std::vector<int> i_row;
      //   std::vector<float> i_lat;
      //   std::vector<float> i_long;
@@ -117,13 +133,13 @@ class GFimg
         void getDistance2water(DistAlgo da);
         void getDistance2water();
         void caldensity();
-        void caldensity(Method me);
+        void caldensity(Method me = TEST_CASE);
         void generate_Lat_Long();
         void getAllValueNearLine(float * li, float * res);
         void getValueByPoints(float * li, std::vector<int> * colrowtemp);
         void extractValueByFile(std::string geofile,std::string savefile);
         void write(write_var var, std::string sfile);
-        void print();
+        void print(print_var var = print_reflectance);
         int geo2num(float num1, float num2, int hw, float num3);
         void num2geo(int col, int row, float * res);
         void writeDen(std::string sfile);
@@ -133,8 +149,9 @@ class GFimg
         void readGeoinfo(std::string geofile);
         void getCorner(); // extract the latitude and longitude corner
         void checkNearWater(NearBody * nb , int row, int col);
+        // pair<列号，行号> // //
+        void areacount(std::pair<int,int> leftup, std::pair<int, int> rightdown );
+        void setPOI(std::pair<int,int> leftup, std::pair<int, int> rightdown );
 };
-
-
 
 #endif /* GFIMG_H*/
