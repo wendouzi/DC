@@ -16,7 +16,7 @@
 #define ST_WFV3 2 // SensorType WFV3
 #define ST_WFV4 3 // SensorType WFV4
 #define RESOLUTION 8
-#define NEAR_POINTS_NUM 100
+#define NEAR_POINTS_NUM 300
 #define FILLVALUE 1000
 #define WATERFILLVALUE 0
 #define NDVI_WATERINDEX (-0.1)
@@ -152,6 +152,7 @@ class GFimg
         // pair<列号，行号> // //
         void areacount(std::pair<int,int> leftup, std::pair<int, int> rightdown );
         void setPOI(std::pair<int,int> leftup, std::pair<int, int> rightdown );
+        bool copyrpb(std::string dest);
 };
 
 #endif /* GFIMG_H*/

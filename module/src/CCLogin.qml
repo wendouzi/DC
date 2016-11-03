@@ -316,6 +316,7 @@ Rectangle {
             style: Text.Raised
             wrapMode: Text.Wrap
             lineHeight: 1.2
+            visible: false
         }
         Text {
             id: copyright
@@ -647,8 +648,10 @@ Rectangle {
                 }
             }
         }
+
         Component{
             id: checkStyle
+
             CheckBoxStyle{
                 indicator: Rectangle{
                     implicitWidth: 18;
@@ -685,6 +688,7 @@ Rectangle {
 
             }
         }
+
         Row {
             id: outputproducts
             x: 100
@@ -693,42 +697,58 @@ Rectangle {
             height: 40
             spacing: 4
             CheckBox {
+                id:ndviproduct
                 text: qsTr("NDVI")
                 style: checkStyle
                 checked: false
             }
             CheckBox {
+                id:ndwiproduct
                 text: qsTr("NDWI")
                 style: checkStyle
                 checked: false
             }
             CheckBox {
+                id:sviproduct
                 text: qsTr("SVI")
-                style: checkStyle
-                checked: true
-            }
-            CheckBox {
-                text: qsTr("与水距离")
-                style: checkStyle
-                checked: true
-            }
-            CheckBox {
-                text: qsTr("KT-bright")
                 style: checkStyle
                 checked: false
             }
             CheckBox {
+                id:distanceproduct
+                text: qsTr("与水距离")
+                style: checkStyle
+                checked: false
+            }
+            CheckBox {
+                id:ktbrightproduct
+                text: qsTr("KT-transform")
+                style: checkStyle
+                checked: false
+            }
+            /*
+            CheckBox {
+                id:ktwetproduct
                 text: qsTr("KT-wet")
                 style: checkStyle
                 checked: false
             }
             CheckBox {
+                id:ktgreenproduct
                 text: qsTr("KT-green")
                 style: checkStyle
                 checked: false
             }
+            */
             CheckBox {
-                text: qsTr("血吸虫分布")
+                id:dingluoproduct
+                text: qsTr("钉螺预测")
+                style: checkStyle
+                checked: true
+            }
+            CheckBox {
+                id:fengxianproduct
+                text: qsTr("风险评估")
                 style: checkStyle
                 checked: true
             }
@@ -891,6 +911,7 @@ Rectangle {
         // 处理图像动画
         process_gif.opacity = 1
         //处理请求
+
         cclogin.file_tiff = textInput1.text
         cclogin.file_xml = textInput2.text
         cclogin.file_rpb = textInput3.text

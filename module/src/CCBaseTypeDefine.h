@@ -29,6 +29,15 @@ const AppId InvalidAppId = 0xffffffff;
 #define RPB_FILEDIALOG     int(3)
 #define SDIR_FILEDIALOG    int(4)
 
+#define TOTAL_PRODUCTS     int(7)
+#define NDVI_ORDER         int(0)
+#define NDWI_ORDER         int(1)
+#define SVI_ORDER          int(2)
+#define DISTANCE_ORDER     int(3)
+#define KT_ORDER           int(4)
+#define DINGLUO_ORDER      int(5)
+#define FENGXIAN_ORDER     int(6)
+
 
 #ifdef WIN32
 #define DIR_BEGIN   8

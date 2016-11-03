@@ -199,6 +199,90 @@ void CCLogin::setSave_dir(QString sd)
     _save_dir = sd;
 }
 
+/* read ndvi wanted or not */
+bool CCLogin::ndvi_prod()
+{
+   return  wantedProducts[NDVI_ORDER];
+}
+
+/* set ndvi wanted */
+void CCLogin::setNdvi_prod(bool iswanted)
+{
+    wantedProducts[NDVI_ORDER] = iswanted;
+}
+
+/* read ndwi wanted or not */
+bool CCLogin::ndwi_prod()
+{
+   return  wantedProducts[NDWI_ORDER];
+}
+
+/* set ndwi wanted */
+void CCLogin::setNdwi_prod(bool iswanted)
+{
+    wantedProducts[NDWI_ORDER] = iswanted;
+}
+
+/* read svi wanted or not */
+bool CCLogin::svi_prod()
+{
+   return  wantedProducts[SVI_ORDER];
+}
+
+/* set svi wanted */
+void CCLogin::setSvi_prod(bool iswanted)
+{
+    wantedProducts[SVI_ORDER] = iswanted;
+}
+
+/* read distance wanted or not */
+bool CCLogin::distance_prod()
+{
+    return wantedProducts[DISTANCE_ORDER] ;
+}
+
+/* set distance wanted */
+void CCLogin::setDistance_prod(bool iswanted)
+{
+    wantedProducts[DISTANCE_ORDER] = iswanted;
+}
+
+/* read KT wanted or not */
+bool CCLogin::KT_prod()
+{
+   return  wantedProducts[KT_ORDER];
+}
+
+/* set KT wanted */
+void CCLogin::setKT_prod(bool iswanted)
+{
+    wantedProducts[KT_ORDER] = iswanted;
+}
+
+/* read dingluo wanted or not */
+bool CCLogin::dingluo_prod()
+{
+   return  wantedProducts[DINGLUO_ORDER];
+}
+
+/* set dingluo wanted */
+void CCLogin::setDingluo_prod(bool iswanted)
+{
+    wantedProducts[DINGLUO_ORDER] = iswanted;
+}
+
+/* read fengxian wanted or not */
+bool CCLogin::fengxian_prod()
+{
+   return  wantedProducts[FENGXIAN_ORDER];
+}
+
+/* set fengxian wanted */
+void CCLogin::setFengxian_prod(bool iswanted)
+{
+    wantedProducts[FENGXIAN_ORDER] = iswanted;
+}
+
 /*  槽函数登录请求 */
 void CCLogin::slot_login_req()
 {

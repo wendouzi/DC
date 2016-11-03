@@ -56,11 +56,11 @@ void ImgControl::slot_to_process(QString _tiff, QString _xml, QString _rpb, QStr
     // pair<列号，行号> // //
 
     m_pGF->areacount(lu, rd);
-   // m_pGF->writeDen(_sdir.toStdString());
-    m_pGF->print(print_distance);
-    m_pGF->print(print_svi);
-    m_pGF->print(print_density);
-    delete m_pGF; m_pGF=NULL;
 
+   // m_pGF->writeDen(_sdir.toStdString());
+   // m_pGF->print(print_distance);
+   // m_pGF->print(print_svi);
+   // m_pGF->print(print_density);
+    delete m_pGF; m_pGF=NULL;
     emit sig_to_schedule(RESULT_SUCESS);
 }

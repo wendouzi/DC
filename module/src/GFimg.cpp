@@ -434,7 +434,8 @@ void GFimg::getDistance2water(DistAlgo da)
         // for each pixel
         
    //     NearBody * nb = new NearBody();
-        for (int row = 1; row < height-1; row++)
+        for (int row = 1; row < height-1; row++) {
+          //  qDebug("row: %d", row);
             for (int col = 1; col < width-1; col++)
             {
                 int idx = row * width + col;
@@ -460,7 +461,7 @@ void GFimg::getDistance2water(DistAlgo da)
                     for ( int ii = -NEAR_POINTS_NUM+1; ii < NEAR_POINTS_NUM; ii++)
                         for ( int jj = -NEAR_POINTS_NUM+1; jj < NEAR_POINTS_NUM; jj++)
                         {
-                            if (row+ii < 0 || row + ii > height || col +jj < 0 || col + jj > width)
+                            if (row+ii < 0 || row + ii > height-1 || col +jj < 0 || col + jj > width-1)
                                 continue;
                             int nearidx = (row + ii) * width + col+jj;
                             if(wi[nearidx]) 
@@ -482,7 +483,7 @@ void GFimg::getDistance2water(DistAlgo da)
                             for ( int ii = -NEAR_POINTS_NUM+1; ii < NEAR_POINTS_NUM; ii++)
                             for ( int jj = 0; jj < NEAR_POINTS_NUM; jj++)
                             {
-                                if (row+ii < 0 || row + ii > height || col +jj < 0 || col + jj > width)
+                                if (row+ii < 0 || row + ii > height-1 || col +jj < 0 || col + jj > width-1)
                                     continue;
                                 int nearidx = (row + ii) * width + col+jj;
                                 if(wi[nearidx]) 
@@ -499,7 +500,7 @@ void GFimg::getDistance2water(DistAlgo da)
                             for ( int ii = -NEAR_POINTS_NUM+1; ii < NEAR_POINTS_NUM; ii++)
                             for ( int jj = -NEAR_POINTS_NUM+1; jj <= 0; jj++)
                             {
-                                if (row+ii < 0 || row + ii > height || col +jj < 0 || col + jj > width)
+                                if (row+ii < 0 || row + ii > height-1 || col +jj < 0 || col + jj > width-1)
                                     continue;
                                 int nearidx = (row + ii) * width + col+jj;
                                 if(wi[nearidx]) 
@@ -525,7 +526,7 @@ void GFimg::getDistance2water(DistAlgo da)
                             for ( int ii = 0; ii < NEAR_POINTS_NUM; ii++)
                             for ( int jj = -NEAR_POINTS_NUM+1; jj < NEAR_POINTS_NUM; jj++)
                             {
-                                if (row+ii < 0 || row + ii > height || col +jj < 0 || col + jj > width)
+                                if (row+ii < 0 || row + ii > height-1 || col +jj < 0 || col + jj > width-1)
                                     continue;
                                 int nearidx = (row + ii) * width + col+jj;
                                 if(wi[nearidx]) 
@@ -542,7 +543,7 @@ void GFimg::getDistance2water(DistAlgo da)
                             for ( int ii = -NEAR_POINTS_NUM+1; ii <= 0; ii++)
                             for ( int jj = -NEAR_POINTS_NUM+1; jj < NEAR_POINTS_NUM; jj++)
                             {
-                                if (row+ii < 0 || row + ii > height || col +jj < 0 || col + jj > width)
+                                if (row+ii < 0 || row + ii > height-1 || col +jj < 0 || col + jj > width-1)
                                     continue;
                                 int nearidx = (row + ii) * width + col+jj;
                                 if(wi[nearidx]) 
@@ -558,7 +559,8 @@ void GFimg::getDistance2water(DistAlgo da)
                         }
                     } // if(!(wi[up]||wi[down]))
                 } // if (wi[up] && wi[down] && wi[left] && wi[right])
-            }// for 
+            }// for
+        }
         qDebug("GFimg::getDistance2water():distance calculate  success.\n");
 
         // set the far pixel as the FILLVALUE the keep the influence range is circle
@@ -622,7 +624,7 @@ void GFimg::getDistance2water(DistAlgo da)
                     for ( int ii = -NEAR_POINTS_NUM+1; ii < NEAR_POINTS_NUM; ii++)
                         for ( int jj = -NEAR_POINTS_NUM+1; jj < NEAR_POINTS_NUM; jj++)
                         {
-                            if (row+ii < 0 || row + ii > height || col +jj < 0 || col + jj > width)
+                            if (row+ii < 0 || row + ii > height-1 || col +jj < 0 || col + jj > width-1)
                                 continue;
                             int nearidx = (row + ii) * width + col+jj;
                             if(wi[nearidx])
@@ -644,7 +646,7 @@ void GFimg::getDistance2water(DistAlgo da)
                             for ( int ii = -NEAR_POINTS_NUM+1; ii < NEAR_POINTS_NUM; ii++)
                             for ( int jj = 0; jj < NEAR_POINTS_NUM; jj++)
                             {
-                                if (row+ii < 0 || row + ii > height || col +jj < 0 || col + jj > width)
+                                if (row+ii < 0 || row + ii > height-1 || col +jj < 0 || col + jj > width-1)
                                     continue;
                                 int nearidx = (row + ii) * width + col+jj;
                                 if(wi[nearidx])
@@ -661,7 +663,7 @@ void GFimg::getDistance2water(DistAlgo da)
                             for ( int ii = -NEAR_POINTS_NUM+1; ii < NEAR_POINTS_NUM; ii++)
                             for ( int jj = -NEAR_POINTS_NUM+1; jj <= 0; jj++)
                             {
-                                if (row+ii < 0 || row + ii > height || col +jj < 0 || col + jj > width)
+                                if (row+ii < 0 || row + ii > height-1 || col +jj < 0 || col + jj > width-1)
                                     continue;
                                 int nearidx = (row + ii) * width + col+jj;
                                 if(wi[nearidx])
@@ -687,7 +689,7 @@ void GFimg::getDistance2water(DistAlgo da)
                             for ( int ii = 0; ii < NEAR_POINTS_NUM; ii++)
                             for ( int jj = -NEAR_POINTS_NUM+1; jj < NEAR_POINTS_NUM; jj++)
                             {
-                                if (row+ii < 0 || row + ii > height || col +jj < 0 || col + jj > width)
+                                if (row+ii < 0 || row + ii > height-1 || col +jj < 0 || col + jj > width-1)
                                     continue;
                                 int nearidx = (row + ii) * width + col+jj;
                                 if(wi[nearidx])
@@ -704,7 +706,7 @@ void GFimg::getDistance2water(DistAlgo da)
                             for ( int ii = -NEAR_POINTS_NUM+1; ii <= 0; ii++)
                             for ( int jj = -NEAR_POINTS_NUM+1; jj < NEAR_POINTS_NUM; jj++)
                             {
-                                if (row+ii < 0 || row + ii > height || col +jj < 0 || col + jj > width)
+                                if (row+ii < 0 || row + ii > height-1 || col +jj < 0 || col + jj > width-1)
                                     continue;
                                 int nearidx = (row + ii) * width + col+jj;
                                 if(wi[nearidx])
@@ -1321,7 +1323,7 @@ void GFimg::writeDen(std::string sfile)
     }
    // delete WriteDataSet;
     qDebug("write to tiff done\n");
-
+    GDALClose((GDALDatasetH)WriteDataSet);
 }
 
 void GFimg::num2geo(int col, int row, float * res)
@@ -1341,6 +1343,34 @@ int GFimg::geo2num(float num1, float num2, int hw, float num3)
     float dif = (num2- num1)/hw;
     return floor((num3- num1)/dif);
 }
+
+bool GFimg::copyrpb( std::string dest)
+{
+    std::string tempsfile = this->savedir + DIR_SEPERATOR + dest;
+    std::ofstream out;
+    std::ifstream in;
+    in.open(this->rpbfile.c_str(),std::ios::in);
+    if(!in.is_open()) {
+        qDebug("%s open failed",this->rpbfile.c_str());
+        return false;
+    }
+    out.open(tempsfile.c_str());
+    if(!out.is_open()) {
+        qDebug("%s create failed",tempsfile.c_str());
+        return false;
+    }
+    in.seekg(0,in.end);
+    long size = in.tellg();
+    in.seekg(0);
+    char* buffer = new char[size];
+    in.read(buffer, size);
+    out.write(buffer,size);
+    delete[] buffer;
+    out.close();
+    in.close();
+    return true;
+}
+
 
 void GFimg::write(write_var var,std::string sfile)
 {
@@ -1368,6 +1398,8 @@ void GFimg::write(write_var var,std::string sfile)
         }
         // delete WriteDataSet;
         qDebug("write ndvi done\n");
+        GDALClose((GDALDatasetH)WriteDataSet);
+
     }
     // save the distance variable
     else if ( var == var_dist )
@@ -1392,6 +1424,7 @@ void GFimg::write(write_var var,std::string sfile)
         }
         // delete WriteDataSet;
         qDebug("write distance done\n");
+        GDALClose((GDALDatasetH)WriteDataSet);
     
     }else if ( var == var_density)
     {
@@ -1415,6 +1448,7 @@ void GFimg::write(write_var var,std::string sfile)
         }
         // delete WriteDataSet;
         qDebug("write density done\n");
+        GDALClose((GDALDatasetH)WriteDataSet);
     }else if (var == var_ndwi)
     {
         assert( NULL != ndwi);
@@ -1436,7 +1470,7 @@ void GFimg::write(write_var var,std::string sfile)
         //      break;
         }
         // delete WriteDataSet;
-    
+        GDALClose((GDALDatasetH)WriteDataSet);
     
     }else if (var == var_wet)
     {
@@ -1459,7 +1493,7 @@ void GFimg::write(write_var var,std::string sfile)
         //      break;
         }
         // delete WriteDataSet;
-        
+        GDALClose((GDALDatasetH)WriteDataSet);
     }else if (var == var_svi)
     {
         assert( NULL != svi);
@@ -1481,6 +1515,7 @@ void GFimg::write(write_var var,std::string sfile)
         //      break;
         }
         // delete WriteDataSet;
+        GDALClose((GDALDatasetH)WriteDataSet);
     }else if (var == var_reflectance)
     {
         
@@ -1520,8 +1555,10 @@ void GFimg::write(write_var var,std::string sfile)
         {
             qDebug("write band4 failed.\n");
         }
-
-
+        GDALClose((GDALDatasetH)WriteDataSet1);
+        GDALClose((GDALDatasetH)WriteDataSet2);
+        GDALClose((GDALDatasetH)WriteDataSet3);
+        GDALClose((GDALDatasetH)WriteDataSet4);
 
         // delete WriteDataSet;
         
@@ -1546,12 +1583,12 @@ void GFimg::write(write_var var,std::string sfile)
         //      break;
         }
         // delete WriteDataSet;
-    
+        GDALClose((GDALDatasetH)WriteDataSet);
     }else
     {
         qDebug("unknown save type");
     }
-
+    copyrpb(sfile);
 }
 
 void GFimg::extractValueByFile(std::string geofile, std::string savefile)

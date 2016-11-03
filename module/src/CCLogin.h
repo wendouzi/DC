@@ -8,6 +8,7 @@
 #include <QDir>
 #include <QtGlobal>
 #include <QVariant>
+#include "CCBaseTypeDefine.h"
 class ischedule;
 
 
@@ -30,6 +31,24 @@ class CCLogin : public QObject
     Q_PROPERTY(QString file_rpb READ file_rpb WRITE setFile_rpb NOTIFY sig_file_rpbChanged)
     //属性：save dir
     Q_PROPERTY(QString save_dir READ save_dir WRITE setSave_dir NOTIFY sig_save_dirChanged)
+
+    //***************checkbox****************************/
+    // attribute: checkbox ndvi
+    Q_PROPERTY(bool ndvi_prod READ ndvi_prod WRITE setNdvi_prod)
+    // attribute: checkbox ndwi
+    Q_PROPERTY(bool ndwi_prod READ ndwi_prod WRITE setNdwi_prod)
+    // attribute: checkbox svi
+    Q_PROPERTY(bool svi_prod READ svi_prod WRITE setSvi_prod)
+    // attribute: checkbox distance
+    Q_PROPERTY(bool distance_prod READ distance_prod WRITE setDistance_prod)
+    // attribute: checkbox KT-transform bright wet green
+    Q_PROPERTY(bool KT_prod READ KT_prod WRITE setKT_prod)
+    // attribute: checkbox dingluo
+    Q_PROPERTY(bool dingluo_prod READ dingluo_prod WRITE setDingluo_prod)
+    // attribute: checkbox fengxian
+    Q_PROPERTY(bool fengxian_prod READ fengxian_prod WRITE setFengxian_prod)
+
+
 public:
     //构造函数
 
@@ -88,6 +107,42 @@ public:
     void setSave_dir(QString sd);
     /* 自动登陆标志位设置 */
     void set_flag_auto(bool isauto);
+
+    /* read ndvi wanted or not */
+    bool ndvi_prod();
+    /* set ndvi wanted */
+    void setNdvi_prod(bool iswanted);
+
+    /* read ndwi wanted or not */
+    bool ndwi_prod();
+    /* set ndwi wanted */
+    void setNdwi_prod(bool iswanted);
+
+    /* read svi wanted or not */
+    bool svi_prod();
+    /* set svi wanted */
+    void setSvi_prod(bool iswanted);
+
+    /* read KT wanted or not */
+    bool distance_prod();
+    /* set KT wanted */
+    void setDistance_prod(bool iswanted);
+
+    /* read KT wanted or not */
+    bool KT_prod();
+    /* set KT wanted */
+    void setKT_prod(bool iswanted);
+
+    /* read dingluo wanted or not */
+    bool dingluo_prod();
+    /* set dingluo wanted */
+    void setDingluo_prod(bool iswanted);
+
+    /* read fengxian wanted or not */
+    bool fengxian_prod();
+    /* set fengxian wanted */
+    void setFengxian_prod(bool iswanted);
+
 
  signals:
 
@@ -197,5 +252,6 @@ private:
     /* 登录计数 */
     int login_counter;
     bool _flag_continue;
+    bool wantedProducts[TOTAL_PRODUCTS];
 };
 #endif // CCLOGIN_H
