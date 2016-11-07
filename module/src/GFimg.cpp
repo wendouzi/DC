@@ -124,7 +124,7 @@ void GFimg::init()
     band4 = _band4;
     CPLFree(pMemData); pMemData = NULL;
     qDebug("read done!\n");
-
+    GDALClose((GDALDatasetH)pDataset);
 }
 
 GFimg::~GFimg()
@@ -381,9 +381,9 @@ void GFimg::getWI()
         }// end of col
     }// end of row
 }
-void GFimg::KTtransform()
+void GFimg::getKTtransform()
 {
-    qDebug("KTtransform...\n");
+    qDebug("getKTtransform...\n");
     bright = (float *) CPLMalloc(sizeof(float)* width * height);
     green = (float *) CPLMalloc(sizeof(float)* width * height);
     wet = (float *) CPLMalloc(sizeof(float)* width * height);
@@ -818,7 +818,7 @@ void GFimg::caldensity(Method me)
     /*
     if(NULL== dis){getWI();getDistance2water();}
     
-    if(wet==NULL){KTtransform();} */
+    if(wet==NULL){getKTtransform();} */
 
      density = (float *) CPLMalloc(sizeof(float)* width * height);
     if(me == withoutDist)
@@ -868,7 +868,7 @@ void GFimg::caldensity(Method me)
        {
             qDebug("%f,%f,%f     ",  distance[i], ndvi[i], density[i]);
         }
-//        if(wet == NULL){KTtransform();}
+//        if(wet == NULL){getKTtransform();}
 //        write(var_wet,"wet.tiff");
         write(var_isShade,"isShade.tiff");
         write(var_ndvi,"ndvi.tiff");
@@ -882,18 +882,18 @@ void GFimg::caldensity(Method me)
     else if (me == SVI_DIST) {
         if(svi == NULL) {
             getSVI();
-            write(var_svi,"svi.tiff");
+          //  write(var_svi,"svi.tiff");
         }
         if (distance == NULL ) {
             getDistance2water(Water2Pixel); 
-            write(var_dist, "distance.tiff");
+          //  write(var_dist, "distance.tiff");
         }
 
         for ( int i = 0; i < width * height ; i++)
         {
             density[i] = 100*svi[i] - distance[i]/ 200;
         }
-        write(var_density,"density_svi_dist.tiff");
+        //write(var_density,"density_svi_dist.tiff");
     }
     else if (me == TEST_CASE) {
 

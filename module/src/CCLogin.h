@@ -9,6 +9,7 @@
 #include <QtGlobal>
 #include <QVariant>
 #include "CCBaseTypeDefine.h"
+#include <bitset>
 class ischedule;
 
 
@@ -34,19 +35,19 @@ class CCLogin : public QObject
 
     //***************checkbox****************************/
     // attribute: checkbox ndvi
-    Q_PROPERTY(bool ndvi_prod READ ndvi_prod WRITE setNdvi_prod)
+    Q_PROPERTY(bool ndvi_prod READ ndvi_prod WRITE setNdvi_prod NOTIFY sig_wantedProducts_Changed)
     // attribute: checkbox ndwi
-    Q_PROPERTY(bool ndwi_prod READ ndwi_prod WRITE setNdwi_prod)
+    Q_PROPERTY(bool ndwi_prod READ ndwi_prod WRITE setNdwi_prod NOTIFY sig_wantedProducts_Changed)
     // attribute: checkbox svi
-    Q_PROPERTY(bool svi_prod READ svi_prod WRITE setSvi_prod)
+    Q_PROPERTY(bool svi_prod READ svi_prod WRITE setSvi_prod NOTIFY sig_wantedProducts_Changed)
     // attribute: checkbox distance
-    Q_PROPERTY(bool distance_prod READ distance_prod WRITE setDistance_prod)
+    Q_PROPERTY(bool distance_prod READ distance_prod WRITE setDistance_prod NOTIFY sig_wantedProducts_Changed)
     // attribute: checkbox KT-transform bright wet green
-    Q_PROPERTY(bool KT_prod READ KT_prod WRITE setKT_prod)
+    Q_PROPERTY(bool KT_prod READ KT_prod WRITE setKT_prod NOTIFY sig_wantedProducts_Changed)
     // attribute: checkbox dingluo
-    Q_PROPERTY(bool dingluo_prod READ dingluo_prod WRITE setDingluo_prod)
+    Q_PROPERTY(bool dingluo_prod READ dingluo_prod WRITE setDingluo_prod NOTIFY sig_wantedProducts_Changed)
     // attribute: checkbox fengxian
-    Q_PROPERTY(bool fengxian_prod READ fengxian_prod WRITE setFengxian_prod)
+    Q_PROPERTY(bool fengxian_prod READ fengxian_prod WRITE setFengxian_prod NOTIFY sig_wantedProducts_Changed)
 
 
 public:
@@ -163,6 +164,8 @@ public:
     void sig_file_rpbChanged();
     /* save dir 改变 */
     void sig_save_dirChanged();
+
+    void sig_wantedProducts_Changed(int s);
 
     /*********************************************************************
         *                           信号:登陆结果

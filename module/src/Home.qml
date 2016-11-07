@@ -13,9 +13,6 @@ Window {
     CCLogin {
         anchors.fill: parent
         visible:true
-    //    mouseArea.onClicked: {
-     //       Qt.quit();
-     //   }
     }
     HomePage {
         anchors.fill: parent

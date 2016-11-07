@@ -27,8 +27,9 @@ public slots:
     void slot_for_imgcontrol(QString s);
 signals:
     // send signal to UI
+    void sig_to_imgcontrol_cancel(QString s);
     void sig_to_UI(QString q, QVariant s);
-    void sig_to_imgcontrol(QString q1,QString q2,QString q3,QString q4);
+    void sig_to_imgcontrol(QString q1,QString q2,QString q3,QString q4, QString q5);
 private:
     void img_process_begin();
 private:
@@ -42,6 +43,7 @@ private:
     QString m_fxml;
     QString m_frpb;
     QString m_dsave;
+    QString m_wantedProducts;
     ImgControl * m_pic;
 };
 #endif // ISCHEDULE_H

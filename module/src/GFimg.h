@@ -11,6 +11,8 @@
 #include <string>
 #include "geoshape.h"
 #include <utility>
+#include "CCBaseTypeDefine.h"
+#include "QImage"
 #define ST_WFV1 0 // SensorType WFV1
 #define ST_WFV2 1 // SensorType WFV2
 #define ST_WFV3 2 // SensorType WFV3
@@ -46,10 +48,13 @@
         var_ndwi,
         var_svi,
         var_dist,
+        var_bright,
         var_wet,
+        var_green,
         var_isShade,
         var_reflectance,
-        var_density
+        var_density,
+        var_risk
     };
     enum DistAlgo
     {
@@ -111,6 +116,7 @@ class GFimg
         std::vector<int> i_colrow;
         std::pair<int, int> _leftup;
         std::pair<int, int> _rightdown;
+     //   bool wantedProducts[TOTAL_PRODUCTS];
        // std::vector<int> i_row;
      //   std::vector<float> i_lat;
      //   std::vector<float> i_long;
@@ -129,7 +135,7 @@ class GFimg
         void getSVI();
         void getWI();
         void getIsShade();
-        void KTtransform();
+        void getKTtransform();
         void getDistance2water(DistAlgo da);
         void getDistance2water();
         void caldensity();
@@ -153,6 +159,7 @@ class GFimg
         void areacount(std::pair<int,int> leftup, std::pair<int, int> rightdown );
         void setPOI(std::pair<int,int> leftup, std::pair<int, int> rightdown );
         bool copyrpb(std::string dest);
+    //    void setWantedProducts(std::string prods);
 };
 
 #endif /* GFIMG_H*/

@@ -59,6 +59,7 @@ Rectangle {
 
             switch (result)
             {
+            // process done
             case 0:
                 processflag = false
                 //close process AnimatedImage
@@ -77,26 +78,31 @@ Rectangle {
                 messageDialog.text = "处理完成"
                 messageDialog.visible = true
                 break;
+            // tiff error
             case 1:
                 process_gif.opacity = 0
                 messageDialog.text = "tiff文件不存在或者路径有误"
                 messageDialog.visible = true
                 break;
+            // xml error
             case 2:
                 process_gif.opacity = 0
                 messageDialog.text = "xml文件不存在或者路径有误"
                 messageDialog.visible = true
                 break;
+            // rpb error
             case 3:
                 process_gif.opacity = 0
                 messageDialog.text = "rpb文件不存在或者路径有误"
                 messageDialog.visible = true
                 break;
+            // save dir error
             case 4:
                 process_gif.opacity = 0
                 messageDialog.text = "输出文件夹不存在或者路径有误"
                 messageDialog.visible = true
                 break;
+            // processing
             case 5:
                 // set process flag true
                 processflag = true
@@ -114,6 +120,7 @@ Rectangle {
                 // open process AnimatedImage
                 process_gif.opacity = 1
                 break;
+            // cancel process
             case 6:
                 process_gif.opacity = 0
                 // signal when stop cancel
@@ -129,11 +136,18 @@ Rectangle {
                 tiffselectbtn2.enabled = true
                 tiffselectbtn3.enabled = true
                 tiffselectbtn4.enabled = true
+                outputproducts.enabled = true
                 precessbtn.enabled = true
                 messageDialog.text = "取消成功"
                 messageDialog.visible = true
                 //cclogin.slot_cancel_process()
-                break
+                break;
+            // none products selected
+            case 7:
+                process_gif.opacity = 0
+                messageDialog.text = "没有选中任何产品"
+                messageDialog.visible = true
+                break;
             }
         }
 
@@ -464,6 +478,7 @@ Rectangle {
             FileDialog {
                 id: fileDialog1
                 title: "Please choose a .tiff file"
+                nameFilters: ["Image Files (*.tiff)"];
                 selectFolder:false
                 //selectedNameFilter:"*.tiff"
                 visible: false
@@ -521,6 +536,7 @@ Rectangle {
             FileDialog {
                 id: fileDialog2
                 title: "Please choose a .xml file"
+                nameFilters: ["Image Files (*.xml)"];
                 selectFolder:false
                 visible: false
                 onAccepted: {
@@ -578,6 +594,7 @@ Rectangle {
             FileDialog {
                 id: fileDialog3
                 title: "Please choose a .rpb file"
+                nameFilters: ["Image Files (*.rpb)"];
                 visible: false
                 selectFolder:false
                 onAccepted: {
@@ -648,11 +665,12 @@ Rectangle {
                 }
             }
         }
-
+/*
         Component{
             id: checkStyle
 
             CheckBoxStyle{
+
                 indicator: Rectangle{
                     implicitWidth: 18;
                     implicitHeight: 18;
@@ -687,8 +705,9 @@ Rectangle {
                 }
 
             }
-        }
 
+        }
+*/
         Row {
             id: outputproducts
             x: 100
@@ -699,32 +718,32 @@ Rectangle {
             CheckBox {
                 id:ndviproduct
                 text: qsTr("NDVI")
-                style: checkStyle
-                checked: false
+               // style: checkStyle
+                checked: cclogin.ndvi_prod
             }
             CheckBox {
                 id:ndwiproduct
                 text: qsTr("NDWI")
-                style: checkStyle
-                checked: false
+               // style: checkStyle
+                checked: cclogin.ndwi_prod
             }
             CheckBox {
                 id:sviproduct
                 text: qsTr("SVI")
-                style: checkStyle
-                checked: false
+               // style: checkStyle
+                checked: cclogin.svi_prod
             }
             CheckBox {
                 id:distanceproduct
                 text: qsTr("与水距离")
-                style: checkStyle
-                checked: false
+               // style: checkStyle
+                checked: cclogin.distance_prod
             }
             CheckBox {
-                id:ktbrightproduct
+                id:ktproduct
                 text: qsTr("KT-transform")
-                style: checkStyle
-                checked: false
+               // style: checkStyle
+                checked: cclogin.KT_prod
             }
             /*
             CheckBox {
@@ -743,14 +762,14 @@ Rectangle {
             CheckBox {
                 id:dingluoproduct
                 text: qsTr("钉螺预测")
-                style: checkStyle
-                checked: true
+              //  style: checkStyle
+                checked: cclogin.dingluo_prod
             }
             CheckBox {
                 id:fengxianproduct
                 text: qsTr("风险评估")
-                style: checkStyle
-                checked: true
+              //  style: checkStyle
+                checked: cclogin.fengxian_prod
             }
         }
         Button {
@@ -785,8 +804,8 @@ Rectangle {
             scale: 1
             clip: false
             activeFocusOnPress: true
-            //visible: processflag
-            visible : false
+            visible: processflag
+            //visible : false
             onClicked:cclogin.slot_cancel_process()
         }
         Button {
@@ -866,6 +885,42 @@ Rectangle {
             //onClicked:{}
         }
 
+        Rectangle{
+            id: preview
+            x: 650
+            y: 100
+            implicitWidth: 100;
+            implicitHeight: 100;
+            border.color: control.hovered? "darkblue":"gray";
+            border.width: 1;
+            Image {
+               anchors.fill: parent
+               //source:
+            }
+
+            Canvas{
+                anchors.fill: parent;
+                anchors.margins: 3;
+                visible: true
+                /*
+                onPaint: {
+
+                    var ctx = getContext("2d");
+                    ctx.save();
+                    ctx.strokeStyle = "#c00020";
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(0,height/2);
+                    ctx.lineTo(width/3 , height);
+                    //ctx.moveTo(0 , height);
+                    ctx.lineTo(width , 0);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+                */
+            }
+        }
+
 
     }
     //登陆动画
@@ -876,6 +931,7 @@ Rectangle {
         z: 100
         opacity: 0
     }
+
 
 
     function tryfinishselect() {
@@ -916,6 +972,13 @@ Rectangle {
         cclogin.file_xml = textInput2.text
         cclogin.file_rpb = textInput3.text
         cclogin.save_dir = textInput4.text
+        cclogin.ndvi_prod = ndviproduct.checked
+        cclogin.ndwi_prod = ndwiproduct.checked
+        cclogin.svi_prod = sviproduct.checked
+        cclogin.distance_prod = distanceproduct.checked
+        cclogin.KT_prod = ktproduct.checked
+        cclogin.dingluo_prod = dingluoproduct.checked
+        cclogin.fengxian_prod = fengxianproduct.checked
         cclogin.slot_finish_select();
     }
 

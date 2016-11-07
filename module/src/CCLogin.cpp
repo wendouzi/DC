@@ -19,6 +19,11 @@ CCLogin::CCLogin(): _user_id("")
   , _flag_remember(false)
   , login_counter(0)
 {
+    for(int i = 0; i < TOTAL_PRODUCTS; i++) {
+        wantedProducts[i] = false;
+    }
+    wantedProducts[DENSITY_ORDER] = true;
+    wantedProducts[RISK_ORDER] = true;
     qDebug("CCLogin constructor");
     /* 滴答初始化 */
     timer = new QTimer(this);
@@ -262,25 +267,25 @@ void CCLogin::setKT_prod(bool iswanted)
 /* read dingluo wanted or not */
 bool CCLogin::dingluo_prod()
 {
-   return  wantedProducts[DINGLUO_ORDER];
+   return  wantedProducts[DENSITY_ORDER];
 }
 
 /* set dingluo wanted */
 void CCLogin::setDingluo_prod(bool iswanted)
 {
-    wantedProducts[DINGLUO_ORDER] = iswanted;
+    wantedProducts[DENSITY_ORDER] = iswanted;
 }
 
 /* read fengxian wanted or not */
 bool CCLogin::fengxian_prod()
 {
-   return  wantedProducts[FENGXIAN_ORDER];
+   return  wantedProducts[RISK_ORDER];
 }
 
 /* set fengxian wanted */
 void CCLogin::setFengxian_prod(bool iswanted)
 {
-    wantedProducts[FENGXIAN_ORDER] = iswanted;
+    wantedProducts[RISK_ORDER] = iswanted;
 }
 
 /*  槽函数登录请求 */
@@ -316,7 +321,7 @@ void CCLogin::slot_login_req()
 void CCLogin::slot_tick()
 {
     qDebug("CCLogin::slot_tick() %d ms has end\n", INTERVAL_LOGIN);
-    emit sig_process_result(6);
+   // emit sig_process_result(6);
     timer->stop();
 }
 
@@ -345,6 +350,10 @@ void CCLogin::slot_finish_select()
     qDebug("xml file: %s \n",_xml_file.toStdString().c_str());
     qDebug("rpb file: %s \n",_rpb_file.toStdString().c_str());
     qDebug("save dir: %s \n",_save_dir.toStdString().c_str());
+    for (int i = 0 ; i < TOTAL_PRODUCTS; ++i)
+    {
+        qDebug("wantedProducts[%d] = %s", i, wantedProducts[i] ? "true":"false" );
+    }
     if(QFile::exists(_tiff_file) && _tiff_file.endsWith(".tiff")) {
 
         if(QFile::exists(_xml_file) && _xml_file.endsWith(".xml")) {
@@ -353,6 +362,19 @@ void CCLogin::slot_finish_select()
 
                 QDir msdir(_save_dir);
                 if(msdir.exists()) {
+
+                    bool temp;
+                    QString prods = "";
+                    QString prodstemp = "";
+                    for(int i = 0; i < TOTAL_PRODUCTS; i++) {
+                        temp = wantedProducts[i] || temp;
+                        prodstemp = wantedProducts[i] ? "1" : "0" ;
+                        prods = prods +  prodstemp;
+                    }
+                    qDebug("wantedproducts string : %s", prods.toStdString().c_str());
+                    if(!temp) {
+                        emit sig_process_result(7);
+                    }
                     _flag_continue = true;
                     emit sig_process_result(5);
                     // begin to process
@@ -362,6 +384,7 @@ void CCLogin::slot_finish_select()
                     qm.insert(XML_FILE_NAME,QVariant(_xml_file));
                     qm.insert(RPB_FILE_NAME,QVariant(_rpb_file));
                     qm.insert(SAVE_DIR_NAME,QVariant(_save_dir));
+                    qm.insert(WANTEDPRODUCTS,QVariant(prods));
                     qv = QVariant(qm);
                     emit sig_for_schedule(REQ_IMG_PRO_START,qv);
                 }

@@ -15,14 +15,15 @@ const AppId InvalidAppId = 0xffffffff;
 #define RES_IMG_PRO_CANCEL      QString("img.cancel")
 #define RES_IMG_PRO_FINISH      QString("img.finish")
 #define RES_IMG_PRO_FAILED      QString("img.failed")
-
 #define RESULT_SUCESS           QString("img.sucess")
 #define RESULT_FAILED           QString("img.failed")
+
 #define FILE_EMPTY              QString("input.empty")
 #define TIFF_FILE_NAME          QString("tiff.file.name")
 #define XML_FILE_NAME           QString("xml.file.name")
 #define RPB_FILE_NAME           QString("rpb.file.name")
 #define SAVE_DIR_NAME           QString("save.dir.name")
+#define WANTEDPRODUCTS          QString("wanted.products")
 
 #define TIFF_FILEDIALOG    int(1)
 #define XML_FILEDIALOG     int(2)
@@ -35,8 +36,8 @@ const AppId InvalidAppId = 0xffffffff;
 #define SVI_ORDER          int(2)
 #define DISTANCE_ORDER     int(3)
 #define KT_ORDER           int(4)
-#define DINGLUO_ORDER      int(5)
-#define FENGXIAN_ORDER     int(6)
+#define DENSITY_ORDER      int(5)
+#define RISK_ORDER     int(6)
 
 
 #ifdef WIN32
