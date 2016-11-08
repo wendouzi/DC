@@ -884,43 +884,36 @@ Rectangle {
             enabled: false
             //onClicked:{}
         }
+       Image{
+           id:preview
+           x:650
+           y:100
+           width: 100;
+           height: 100;
+           visible: false
+       }
 
+ /*
         Rectangle{
             id: preview
             x: 650
             y: 100
             implicitWidth: 100;
             implicitHeight: 100;
-            border.color: control.hovered? "darkblue":"gray";
+            //border.color: control.hovered? "darkblue":"gray";
             border.width: 1;
             Image {
                anchors.fill: parent
-               //source:
+               //source:"qrc:///preview/gf_preview22"
             }
 
             Canvas{
                 anchors.fill: parent;
                 anchors.margins: 3;
-                visible: true
-                /*
-                onPaint: {
-
-                    var ctx = getContext("2d");
-                    ctx.save();
-                    ctx.strokeStyle = "#c00020";
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    ctx.moveTo(0,height/2);
-                    ctx.lineTo(width/3 , height);
-                    //ctx.moveTo(0 , height);
-                    ctx.lineTo(width , 0);
-                    ctx.stroke();
-                    ctx.restore();
-                }
-                */
+                visible: tru
             }
         }
-
+*/
 
     }
     //登陆动画

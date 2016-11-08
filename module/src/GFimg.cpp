@@ -1620,3 +1620,4 @@ void GFimg::extractValueByFile(std::string geofile, std::string savefile)
     }
   //  free(geoinfo); 
 }
+

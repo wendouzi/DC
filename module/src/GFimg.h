@@ -30,6 +30,9 @@
 #define RATIO43_MIN (-5)
 #define RATIO43_MAX (5)
 
+
+
+
 #ifdef __WINDOWS_
 #define DIR_SEPERATOR "\\"
 #else
@@ -89,10 +92,7 @@ class GFimg
         std::string rpbfile;
         std::string savedir;
         float tllat,tllong,trlat,trlong,bllat,bllong,brlat,brlong;
-        float * band1;
-        float * band2;
-        float * band3;
-        float * band4;
+
         float * latitude;
         float * longitude;
         float * ndvi;
@@ -110,8 +110,7 @@ class GFimg
         float * geoinfo; // latitude and longitude  of in situ points
      //   float * latitude;
      //   float * longitude;
-        int width;
-        int height;
+
 //        std::vector<vector<int>> colrow;
         std::vector<int> i_colrow;
         std::pair<int, int> _leftup;
@@ -120,8 +119,13 @@ class GFimg
        // std::vector<int> i_row;
      //   std::vector<float> i_lat;
      //   std::vector<float> i_long;
-
-
+    public:
+        float * band1;
+        float * band2;
+        float * band3;
+        float * band4;
+        int width;
+        int height;
     public:
         GFimg(const std::string  _filename,
                 const  std::string _xmlfile,
@@ -160,6 +164,8 @@ class GFimg
         void setPOI(std::pair<int,int> leftup, std::pair<int, int> rightdown );
         bool copyrpb(std::string dest);
     //    void setWantedProducts(std::string prods);
+
+
 };
 
 #endif /* GFIMG_H*/
