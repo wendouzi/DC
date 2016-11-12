@@ -196,6 +196,7 @@ public:
 
     void sig_select_file(int result);
 
+    void sig_selectdFile(QString q); // for imgpreview.h
 public slots:
     /*********************************************************************
         *                           槽函数:登陆请求

@@ -1,13 +1,14 @@
 import QtQuick 2.4
 import QtQuick.Window 2.2
 Window {
+    id:mainwindow
     visible: true
-    width:800
-    height:400
-    minimumHeight: 400
-    maximumHeight: 400
-    minimumWidth: 800
-    maximumWidth: 800
+    width:960
+    height:480
+    minimumHeight: 480
+    maximumHeight: 480
+    minimumWidth: 960
+    maximumWidth: 960
     title: "Disease Control Image Process System"
 
     CCLogin {
@@ -18,4 +19,7 @@ Window {
         anchors.fill: parent
         visible:false
     }
+
 }
+
+

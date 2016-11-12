@@ -2,6 +2,8 @@
 #include "QDebug"
 #include "QImage"
 #include "QColor"
+#include "CCImage.h"
+#include "QRectF"
 ImgPreview::ImgPreview(GFimg * gft) :
     QQuickImageProvider(QQuickImageProvider::Image)
 {
@@ -55,31 +57,158 @@ QImage  ImgPreview::requestImage(const QString &id, QSize *size, const QSize &re
     return qimg;
 }
 
-ElementGroup::ElementGroup() {
+ElementGroup::ElementGroup():m_pen(Qt::black)
+  , m_startpoint(-1,-1)
+  , m_lastpoint(-1,-1) {
 
 }
 
-ElementGroup::~ElementGroup() {
-
-}
-ElementGroup::ElementGroup(const QRectF &rectg) {
-    this->m_rect = rectg;
-}
-
-PreViewPainter::PreViewPainter(QQuickItem *parent) :
-    QQuickPaintedItem(parent)
+ElementGroup::~ElementGroup()
 {
 
+}
+ElementGroup::ElementGroup(const ElementGroup & e) {
+    this->m_pen = e.m_pen;
+    this->m_startpoint = e.m_startpoint;
+    this->m_lastpoint = e.m_lastpoint;
+}
+
+void ElementGroup::setStartPoint(const QPointF &p) {
+    m_startpoint = p;
+}
+void ElementGroup::setLastPoint(const QPointF &p) {
+    m_lastpoint = p;
+}
+
+bool ElementGroup::isEmpty() {
+    if( m_startpoint.x() == -1 || m_startpoint.y() == -1) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+QPointF * ElementGroup::getStartPoint() {
+    return &m_startpoint;
+}
+
+QPointF * ElementGroup::getLastPoint() {
+    return &m_lastpoint;
+}
+
+
+PreViewPainter::PreViewPainter(QQuickItem *parent):QQuickPaintedItem(parent)
+    , m_previewwidth(PREVIEW_WIDTH)
+    , m_previewheight(PREVIEW_HEIGHT)
+    , m_bpressed(false)
+    , m_LastFile(INVALIDSELECT)
+    , m_rectF(NULL)
+    , m_ccimage(NULL)
+    , m_bupdate(false)
+{
+    setAcceptedMouseButtons(Qt::LeftButton);
+    m_rectF = new QRectF(0,0,PREVIEW_WIDTH,PREVIEW_HEIGHT);
+    m_ccimage = CCImage::getInstance();
 }
 
 PreViewPainter::~PreViewPainter() {
 
 }
 
+int PreViewPainter::previewwidth() {
+    return m_previewwidth;
+}
+
+void PreViewPainter::setPreviewwidth(int w) {
+    m_previewwidth = w;
+}
+
+int PreViewPainter::previewheight() {
+    return m_previewheight;
+}
+
+void PreViewPainter::setPreviewheight(int h) {
+    m_previewwidth = h;
+}
+
 void PreViewPainter::undo() {
 
 }
 
-void PreViewPainter::paint(QPainter *painter) {
+void PreViewPainter::onSelectedFile(QString q) {
+    qDebug("PreViewPainter::onSelectedFile()");
+    if(q.compare(INVALIDSELECT) != 0 && q.compare(m_LastFile) !=0){
+        m_bupdate = true;
+    }
+    else {
+        m_bupdate = false;
+    }
+    m_LastFile = q;
+    this->update();
+}
 
+void PreViewPainter::mousePressEvent(QMouseEvent *event) {
+    if(!(event->button() & acceptedMouseButtons())) {
+        QQuickPaintedItem::mousePressEvent(event);
+    }
+    else {
+        qDebug("PreviewPainter::mouse Pressed");
+        m_bpressed = true;
+        QPointF startpoint = event->localPos();
+        m_element.setStartPoint(startpoint);
+        m_element.setLastPoint(startpoint);
+        event->setAccepted(true);
+        update();
+    }
+}
+
+void PreViewPainter::mouseMoveEvent(QMouseEvent *event) {
+    if(!m_bpressed || m_element.isEmpty()) {
+        QQuickPaintedItem::mouseMoveEvent(event);
+    }
+    else {
+        qDebug("PreviewPainter::mousePressEvent");
+        QPointF lastpoint = event->localPos();
+        m_element.setLastPoint(lastpoint);
+        update();
+    }
+}
+
+void PreViewPainter::mouseReleaseEvent(QMouseEvent *event) {
+    if(!m_bpressed || m_element.isEmpty() || !(event->button() & acceptedMouseButtons())) {
+        QQuickPaintedItem::mouseReleaseEvent(event);
+    }
+    else {
+        qDebug("PreviewPainter::mousePressEvent");
+        QPointF lastpoint = event->localPos();
+        m_element.setLastPoint(lastpoint);
+        m_bpressed = false;
+        update();
+    }
+}
+
+void PreViewPainter::purgePaintElements() {
+
+}
+
+void PreViewPainter::paint(QPainter *painter) {
+    qDebug("PreViewPainter::paint()");
+    /*
+    if(m_LastFile.compare(INVALIDSELECT) != 0) {
+        if(m_bupdate) {
+            //ccimg->initImg("/home/yangxianping/workspace/gf/data/GF1_WFV1_E111.8_N29.7_20150521_L1A0000818473/GF1_WFV1_E111.8_N29.7_20150521_L1A0000818473.tiff");
+            //ccimg->initImg(PREVIEW_TESE_CASE);
+            m_ccimage->initImg(m_LastFile.toStdString());
+            QImage * qimg = m_ccimage->getImg();
+            painter->setRenderHint(QPainter::Antialiasing);
+            painter->drawImage(*m_rectF,*qimg);
+            m_bupdate = false;
+        }
+    }
+    */
+    painter->drawRect(m_element.getStartPoint()->rx()
+                      ,m_element.getStartPoint()->ry()
+                      ,m_element.getLastPoint()->rx() - m_element.getStartPoint()->rx()
+                      ,m_element.getLastPoint()->ry() - m_element.getStartPoint()->ry()
+                      );
 }

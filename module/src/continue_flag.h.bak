@@ -1,0 +1,8 @@
+#ifndef CANCEL_FLAG_H
+#define CONTINUE_FLAG_H
+
+class cancelFlag() {
+		bool m_bcancelFlag;
+}
+
+#endif

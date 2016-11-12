@@ -15,17 +15,15 @@ const AppId InvalidAppId = 0xffffffff;
 #define RES_IMG_PRO_CANCEL      QString("img.cancel")
 #define RES_IMG_PRO_FINISH      QString("img.finish")
 #define RES_IMG_PRO_FAILED      QString("img.failed")
+
 #define RESULT_SUCESS           QString("img.sucess")
 #define RESULT_FAILED           QString("img.failed")
-
 #define FILE_EMPTY              QString("input.empty")
 #define TIFF_FILE_NAME          QString("tiff.file.name")
 #define XML_FILE_NAME           QString("xml.file.name")
 #define RPB_FILE_NAME           QString("rpb.file.name")
 #define SAVE_DIR_NAME           QString("save.dir.name")
 #define WANTEDPRODUCTS          QString("wanted.products")
-
-#define INVALIDSELECT  QString("invalid.selected.file")
 
 #define TIFF_FILEDIALOG    int(1)
 #define XML_FILEDIALOG     int(2)
@@ -41,12 +39,7 @@ const AppId InvalidAppId = 0xffffffff;
 #define DENSITY_ORDER      int(5)
 #define RISK_ORDER     int(6)
 
-#define COLOR_MAX_INT      255
-#define PREVIEW_WIDTH     int(360)
-#define PREVIEW_HEIGHT    int(402)
-//#define PREVIEW_WIDTH     int(440)
-//#define PREVIEW_HEIGHT    int(360)
-#define PREVIEW_TESE_CASE  "test"
+
 #ifdef WIN32
 #define DIR_BEGIN   8
 #else

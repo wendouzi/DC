@@ -8,60 +8,55 @@
 #include "cpl_conv.h"
 #include "GFimg.h"
 #include "config.h"
-#include "QDebug"
-GFimg::GFimg(const std::string  _filename,
-            const std::string _xmlfile,
-             const std::string _rpbfile,
-             const std::string _savedir,
-             const int  _SensorType)
-            : filename(_filename)
-            , xmlfile(_xmlfile)
-            , rpbfile(_rpbfile)
-            , savedir(_savedir)
-            ,SensorType(_SensorType)
-            , band1(NULL)
-            , band2(NULL)
-            , band3(NULL)
-            , band4(NULL)
-            , ndvi(NULL)
-            , ndwi(NULL)
-            , wi(NULL)
-            , svi(NULL)
-            , bright(NULL)
-            , green(NULL)
-            , wet(NULL)
-            , dis(NULL)
-            , isShade(NULL)
-            , distance(NULL)
-            , latitude(NULL)
-            , longitude(NULL)
-            , width(-1)
-            , height(-1)
-            , _leftup(0,0)
-            , _rightdown(0,0)
+
+GFimg::GFimg(const std::string & _filename, const int & _SensorType,
+       const std::string _xmlfile, const std::string _rpbfile
+        )
 {
-    qDebug("GFimg::GFimg(), constructor");
+    filename = _filename;
+    SensorType = _SensorType;
+    xmlfile = _xmlfile;
+    rpbfile = _rpbfile;
+    band1 = NULL;
+    band2 = NULL;
+    band3 = NULL;
+    band4 = NULL;
+    ndvi = NULL;
+    ndwi = NULL;
+    wi = NULL;
+    svi = NULL;
+    bright = NULL;
+    green = NULL;
+    wet = NULL;
+    dis = NULL;
+    isShade = NULL;
+    distance= NULL;
+    density = NULL;
+    latitude = NULL;
+    longitude = NULL;
+    width = -1;
+    height = -1;
 }
 
 void GFimg::init()
 {
-    qDebug("reading GF img  %s  .......\n",filename.c_str());
+   printf("reading GF img  %s  .......\n",filename.c_str());
    GDALAllRegister();
    GDALDataset * pDataset = NULL;
    pDataset = (GDALDataset *)GDALOpen(filename.c_str(),GA_ReadOnly);
    if(pDataset == NULL)
    {
-        qDebug("File to open file: %s\n", filename.c_str());
+        printf("File to open file: %s\n", filename.c_str());
        // GDALCose(pDataset);
-        return ;
+        exit(1) ;
    }
 //   double adfGeoTransform[6];
 //   pDataset->GetGeoTransform(adfGeoTransform);
-//   qDebug("GeoTransfrom:%f,%f,%f,%f,%f,%f\n",adfGeoTransform[0],adfGeoTransform[1],adfGeoTransform[2],adfGeoTransform[3],adfGeoTransform[4],adfGeoTransform[5]);
+//   printf("GeoTransfrom:%f,%f,%f,%f,%f,%f\n",adfGeoTransform[0],adfGeoTransform[1],adfGeoTransform[2],adfGeoTransform[3],adfGeoTransform[4],adfGeoTransform[5]);
    int nRasterCount = GDALGetRasterCount(pDataset);
    width = GDALGetRasterXSize(pDataset);
    height = GDALGetRasterYSize(pDataset);
-   qDebug("nRasterCount:%d,width:%d,height:%d\n",nRasterCount,width,height);
+   printf("nRasterCount:%d,width:%d,height:%d\n",nRasterCount,width,height);
    assert(nRasterCount == 4);
 
    GDALRasterBand * pBand1 = pDataset->GetRasterBand(1);
@@ -75,9 +70,9 @@ void GFimg::init()
             width,height,GDT_UInt16,
             0,0);
     float * _band1 = (float *) CPLMalloc(sizeof(float)* width * height);
-    float  _offset = offset[SensorType * 4];
-    float  _scale = scale[SensorType * 4];
-    for(int i = 0; i < height*width; i++)
+   float  _offset = offset[SensorType * 4];
+   float  _scale = scale[SensorType * 4];
+    for(size_t i = 0; i < height*width; i++)
         {
             _band1[i] = (pMemData[i] - _offset)/ _scale/E0[0];
         }
@@ -90,7 +85,7 @@ void GFimg::init()
     float * _band2 = (float *) CPLMalloc(sizeof(float)* width * height);
     _offset = offset[SensorType * 4+1];
     _scale = scale[SensorType * 4+1];
-    for(int i = 0; i < height*width; i++)
+    for(size_t i = 0; i < height*width; i++)
         {
             _band2[i] = (pMemData[i] - _offset)/ _scale/E0[1];
         }
@@ -103,7 +98,7 @@ void GFimg::init()
     float * _band3 = (float *) CPLMalloc(sizeof(float)* width * height);
     _offset = offset[SensorType * 4+2];
     _scale = scale[SensorType * 4+2];
-    for(int i = 0; i < height*width; i++)
+    for(size_t i = 0; i < height*width; i++)
         {
             _band3[i] = (pMemData[i] - _offset)/ _scale/E0[2];
         }
@@ -123,13 +118,12 @@ void GFimg::init()
         }
     band4 = _band4;
     CPLFree(pMemData); pMemData = NULL;
-    qDebug("read done!\n");
-    GDALClose((GDALDatasetH)pDataset);
+      printf("read done!\n");
 }
 
 GFimg::~GFimg()
 {
-    qDebug("GFimg release...\n");
+    printf("GFimg release...\n");
     if(band1!=NULL){
         CPLFree(band1); band1 = NULL;
     }
@@ -185,88 +179,22 @@ GFimg::~GFimg()
     {
         CPLFree(distance);distance = NULL;
     }
+
 }
 
-void GFimg::print(print_var var)
+void GFimg::print()
 {
-    if(print_reflectance == var) {
-        if(band1!=NULL)
+    if(band1!=NULL)
+    {
+        for(size_t i =0; i < width * height;i+=100000)
         {
-            for(int i =0; i < width * height;i+=100000)
-            {
-                qDebug("%f,%f,%f,%f", band1[i],band2[i],band3[i], band4[i]);
-            }
+            printf("%f,%f,%f,%f,\n", band1[i],band2[i],band3[i], band4[i]);
         }
-        else
-        {
-            qDebug("band1 is NULL");
-        }
-    }
-    else if (print_distance == var) {
-        if(distance != NULL)
-        {
-            for(int i =0; i < width * height;i+=100000)
-            {
-                qDebug("distance: %f", distance[i]);
-            }
-        }
-        else
-        {
-            qDebug("distance is NULL");
-        }
-    }
-    else if (print_svi == var) {
-        if(svi != NULL)
-        {
-            for(int i =0; i < width * height;i+=100000)
-            {
-                qDebug("svi: %f", svi[i]);
-            }
-        }
-        else
-        {
-            qDebug("svi is NULL");
-        }
-    }
-    else if (print_density == var) {
-        if(density != NULL)
-        {
-            for(int i =0; i < width * height;i+=100000)
-            {
-                qDebug("density: %f", density[i]);
-            }
-        }
-        else
-        {
-            qDebug("density is NULL");
-        }
-    }
-    else {
-        qDebug("other print type , undefined");
     }
 }
-void GFimg::setPOI(std::pair<int, int> leftup, std::pair<int, int> rightdown) {
-    if(leftup.first == 0 && leftup.second == 0 && rightdown.first == 0 && rightdown.second == 0) {
-        qDebug("POI invalid input!\n");
-        return;
-    }
-    if(leftup.first < 0 || leftup.second < 0 || rightdown.first < 0 || rightdown.second < 0) {
-        qDebug("POI invalid input!\n");
-        return;
-    }
-    if(leftup.first > height || leftup.second > width || rightdown.first > height || rightdown.second > width) {
-        qDebug("POI invalid input!\n");
-        return;
-    }
-    _leftup = leftup;
-    _rightdown = rightdown;
-    qDebug("GFimg::setPOI<%d,%d>,<%d,%d>\n",leftup.first,leftup.second,rightdown.first,rightdown.second);
-
-}
-
 void GFimg::getNDVI()
 {
-    qDebug("getNDVI()...\n");
+    printf("getNDVI()...\n");
     ndvi = (float *) CPLMalloc(sizeof(float)* width * height);
     size_t iLimit = height*width;
     for(size_t i = 0; i < iLimit; i++)
@@ -279,7 +207,7 @@ void GFimg::getNDVI()
 
 void GFimg::getNDWI()
 {
-    qDebug("getNDWI()...\n");
+    printf("getNDWI()...\n");
     ndwi = (float *) CPLMalloc(sizeof(float) * width * height);
     size_t iLimit = height * width;
     for(size_t i = 0; i < iLimit; i++)
@@ -296,7 +224,7 @@ void GFimg::getNDWI()
 }
 void GFimg::getIsShade()
 {
-    qDebug("getIsShade()...");
+    printf("getIsShade()...");
     isShade = (float *) CPLMalloc(sizeof(float) * width * height);
  //   ndwi = (float * ) CPLMalloc(sizeof(float) * width * height);
     size_t iLimit = height*width;
@@ -321,16 +249,17 @@ void GFimg::getIsShade()
 }
 void GFimg::getWI()
 {
-    qDebug("GFimg::getWI()...\n");
-    if (ndwi==NULL)
+    printf("getWI()...\n");
+      
+    if (ndvi==NULL)
     {
-        qDebug("GFimg::getWI(), do getNDWI() !\n");
-        getNDWI();
+        printf("do init first, please!\n");
+        exit(1);
     }
     
 /*    if (ndwi == NULL)
     {
-        qDebug("ndwi is not init before\n");
+        printf("ndwi is not init before\n");
         exit(1);
     }
     */
@@ -381,9 +310,9 @@ void GFimg::getWI()
         }// end of col
     }// end of row
 }
-void GFimg::getKTtransform()
+void GFimg::KTtransform()
 {
-    qDebug("getKTtransform...\n");
+    printf("KTtransform...\n");
     bright = (float *) CPLMalloc(sizeof(float)* width * height);
     green = (float *) CPLMalloc(sizeof(float)* width * height);
     wet = (float *) CPLMalloc(sizeof(float)* width * height);
@@ -404,25 +333,17 @@ void GFimg::checkNearWater(NearBody * nb, int row, int col)
 
 void GFimg::getDistance2water(DistAlgo da)
 {
-    qDebug("GFimg::getDistance2water():get distance\n");
+    printf("get distance\n");
     // if algorithm is for each image pixel
     if (Pixel2Water == da) {
-        assert(true == false);
+        
     }
     
     // else if algorithm is for each water pixel
     else if (Water2Pixel == da) {
-        qDebug("No POI input, calculate distance for the whole image!\n");
-        if(wi == NULL) {
-            getWI();
-        }
         // malloc the mat of distance
         distance = (float *) CPLMalloc(sizeof(float) * width * height);
-        if(distance == NULL) {
-            qDebug("malloc the distance failed\n");
-            return;
-        }
-        qDebug("malloc the distance sucess\n");
+        
         // init the disint 
         for (int row = 0; row < height; row++)
             for (int col = 0; col < width; col++)
@@ -430,13 +351,12 @@ void GFimg::getDistance2water(DistAlgo da)
                 int idx = row * width + col;
                 distance[idx] = FILLVALUE;
             }
-        qDebug("GFimg::getDistance2water():distance init success.\n");
+        
         // for each pixel
         
    //     NearBody * nb = new NearBody();
-        for (int row = 1; row < height-1; row++) {
-          //  qDebug("row: %d", row);
-            for (int col = 1; col < width-1; col++)
+        for (int row = 1; row < height; row++)
+            for (int col = 1; col < width; col++)
             {
                 int idx = row * width + col;
                 // if not water, set the dist as FILLVALUE and continue
@@ -461,7 +381,7 @@ void GFimg::getDistance2water(DistAlgo da)
                     for ( int ii = -NEAR_POINTS_NUM+1; ii < NEAR_POINTS_NUM; ii++)
                         for ( int jj = -NEAR_POINTS_NUM+1; jj < NEAR_POINTS_NUM; jj++)
                         {
-                            if (row+ii < 0 || row + ii > height-1 || col +jj < 0 || col + jj > width-1)
+                            if (row+ii < 0 || row + ii > height || col +jj < 0 || col + jj > width)
                                 continue;
                             int nearidx = (row + ii) * width + col+jj;
                             if(wi[nearidx]) 
@@ -483,7 +403,7 @@ void GFimg::getDistance2water(DistAlgo da)
                             for ( int ii = -NEAR_POINTS_NUM+1; ii < NEAR_POINTS_NUM; ii++)
                             for ( int jj = 0; jj < NEAR_POINTS_NUM; jj++)
                             {
-                                if (row+ii < 0 || row + ii > height-1 || col +jj < 0 || col + jj > width-1)
+                                if (row+ii < 0 || row + ii > height || col +jj < 0 || col + jj > width)
                                     continue;
                                 int nearidx = (row + ii) * width + col+jj;
                                 if(wi[nearidx]) 
@@ -500,7 +420,7 @@ void GFimg::getDistance2water(DistAlgo da)
                             for ( int ii = -NEAR_POINTS_NUM+1; ii < NEAR_POINTS_NUM; ii++)
                             for ( int jj = -NEAR_POINTS_NUM+1; jj <= 0; jj++)
                             {
-                                if (row+ii < 0 || row + ii > height-1 || col +jj < 0 || col + jj > width-1)
+                                if (row+ii < 0 || row + ii > height || col +jj < 0 || col + jj > width)
                                     continue;
                                 int nearidx = (row + ii) * width + col+jj;
                                 if(wi[nearidx]) 
@@ -526,7 +446,7 @@ void GFimg::getDistance2water(DistAlgo da)
                             for ( int ii = 0; ii < NEAR_POINTS_NUM; ii++)
                             for ( int jj = -NEAR_POINTS_NUM+1; jj < NEAR_POINTS_NUM; jj++)
                             {
-                                if (row+ii < 0 || row + ii > height-1 || col +jj < 0 || col + jj > width-1)
+                                if (row+ii < 0 || row + ii > height || col +jj < 0 || col + jj > width)
                                     continue;
                                 int nearidx = (row + ii) * width + col+jj;
                                 if(wi[nearidx]) 
@@ -543,7 +463,7 @@ void GFimg::getDistance2water(DistAlgo da)
                             for ( int ii = -NEAR_POINTS_NUM+1; ii <= 0; ii++)
                             for ( int jj = -NEAR_POINTS_NUM+1; jj < NEAR_POINTS_NUM; jj++)
                             {
-                                if (row+ii < 0 || row + ii > height-1 || col +jj < 0 || col + jj > width-1)
+                                if (row+ii < 0 || row + ii > height || col +jj < 0 || col + jj > width)
                                     continue;
                                 int nearidx = (row + ii) * width + col+jj;
                                 if(wi[nearidx]) 
@@ -559,10 +479,8 @@ void GFimg::getDistance2water(DistAlgo da)
                         }
                     } // if(!(wi[up]||wi[down]))
                 } // if (wi[up] && wi[down] && wi[left] && wi[right])
-            }// for
-        }
-        qDebug("GFimg::getDistance2water():distance calculate  success.\n");
-
+            }// for 
+        
         // set the far pixel as the FILLVALUE the keep the influence range is circle
         for ( int row = 0; row < height; row++)
            for ( int col = 0; col < width; col++)
@@ -573,170 +491,9 @@ void GFimg::getDistance2water(DistAlgo da)
                     distance[idx] = FILLVALUE;
                 }
            } 
+
+
     }// method
-    else if (POI_SVI_DIST == da ) {
-        qDebug("There are valid POI input, calculate POI distance!\n");
-        if(wi == NULL) {
-            getWI();
-        }
-        // malloc the mat of distance
-        distance = (float *) CPLMalloc(sizeof(float) * width * height);
-        if(distance == NULL) {
-            qDebug("malloc the distance failed\n");
-            return;
-        }
-        qDebug("malloc the distance sucess\n");
-        // init the disint
-        for (int row = 0; row < height; row++)
-            for (int col = 0; col < width; col++)
-            {
-                int idx = row * width + col;
-                distance[idx] = FILLVALUE;
-            }
-        qDebug("GFimg::getDistance2water():distance init success.\n");
-        // for each pixel
-
-   //     NearBody * nb = new NearBody();
-        for (int row = _leftup.second; row < _rightdown.second-1; row++) {
-            //qDebug("row :%d \n", row);
-            for (int col = _leftup.first; col < _rightdown.first-1; col++)
-            {
-                int idx = row * width + col;
-                // if not water, set the dist as FILLVALUE and continue
-                if(!wi[idx])
-                {
-                    continue;
-                }
-                // find the neighbour water pixels
-                int up = (row - 1) * width + col;
-                int down = (row - 1) * width + col;
-                int left = idx - 1;
-                int right = idx + 1;
-                // if all near pixel are water , then skip
-                if (wi[up] && wi[down] && wi[left] && wi[right])
-                {
-                    continue;
-                }
-                // else if the near pixel all are not water
-                else if (!(wi[up] || wi[down] || wi[left] || wi[right] ))
-                {
-                    // then calculate distance for each pixel
-                    for ( int ii = -NEAR_POINTS_NUM+1; ii < NEAR_POINTS_NUM; ii++)
-                        for ( int jj = -NEAR_POINTS_NUM+1; jj < NEAR_POINTS_NUM; jj++)
-                        {
-                            if (row+ii < 0 || row + ii > height-1 || col +jj < 0 || col + jj > width-1)
-                                continue;
-                            int nearidx = (row + ii) * width + col+jj;
-                            if(wi[nearidx])
-                                continue;
-                            float dis = sqrt(pow(ii,2)+pow(jj,2));
-                            if (dis < distance[nearidx])
-                                distance[nearidx] = dis;
-                        }
-                }
-                // else pixel the near pixeles are water
-                else{
-                    // if up and down are both not water
-                    if(!(wi[up]||wi[down]))
-                    {
-                        // if left is water
-                        if(wi[left])
-                        {
-                            // calculate the distance for the right part
-                            for ( int ii = -NEAR_POINTS_NUM+1; ii < NEAR_POINTS_NUM; ii++)
-                            for ( int jj = 0; jj < NEAR_POINTS_NUM; jj++)
-                            {
-                                if (row+ii < 0 || row + ii > height-1 || col +jj < 0 || col + jj > width-1)
-                                    continue;
-                                int nearidx = (row + ii) * width + col+jj;
-                                if(wi[nearidx])
-                                    continue;
-                                float dis = sqrt(pow(ii,2)+pow(jj,2));
-                                if (dis < distance[nearidx])
-                                    distance[nearidx] = dis;
-                            }
-                        }
-                        // else the right pixel is water
-                        else if (wi[right])
-                        {
-                            // calculate the distance for the left part
-                            for ( int ii = -NEAR_POINTS_NUM+1; ii < NEAR_POINTS_NUM; ii++)
-                            for ( int jj = -NEAR_POINTS_NUM+1; jj <= 0; jj++)
-                            {
-                                if (row+ii < 0 || row + ii > height-1 || col +jj < 0 || col + jj > width-1)
-                                    continue;
-                                int nearidx = (row + ii) * width + col+jj;
-                                if(wi[nearidx])
-                                    continue;
-                                float dis = sqrt(pow(ii,2)+pow(jj,2));
-                                if (dis < distance[nearidx])
-                                    distance[nearidx] = dis;
-                            }
-                        }
-                        // impossible case
-                        else
-                        {
-                            assert(true == false);
-                        }
-                    }
-                    // else up and down has water pixel. one or both
-                    else
-                    {
-                        // if the up pixel is water
-                        if(wi[up])
-                        {
-                            // calculate the distance for the down part
-                            for ( int ii = 0; ii < NEAR_POINTS_NUM; ii++)
-                            for ( int jj = -NEAR_POINTS_NUM+1; jj < NEAR_POINTS_NUM; jj++)
-                            {
-                                if (row+ii < 0 || row + ii > height-1 || col +jj < 0 || col + jj > width-1)
-                                    continue;
-                                int nearidx = (row + ii) * width + col+jj;
-                                if(wi[nearidx])
-                                    continue;
-                                float dis = sqrt(pow(ii,2)+pow(jj,2));
-                                if (dis < distance[nearidx])
-                                    distance[nearidx] = dis;
-                            }
-                        }
-                        // else if the down pixel is water
-                        else if (wi[down])
-                        {
-                            // calculate the distance for the up part
-                            for ( int ii = -NEAR_POINTS_NUM+1; ii <= 0; ii++)
-                            for ( int jj = -NEAR_POINTS_NUM+1; jj < NEAR_POINTS_NUM; jj++)
-                            {
-                                if (row+ii < 0 || row + ii > height-1 || col +jj < 0 || col + jj > width-1)
-                                    continue;
-                                int nearidx = (row + ii) * width + col+jj;
-                                if(wi[nearidx])
-                                    continue;
-                                float dis = sqrt(pow(ii,2)+pow(jj,2));
-                                if (dis < distance[nearidx])
-                                    distance[nearidx] = dis;
-                            }
-                        }else
-                        {
-                            // impossible case
-                            assert(true == false);
-                        }
-                    } // if(!(wi[up]||wi[down]))
-                } // if (wi[up] && wi[down] && wi[left] && wi[right])
-            }// for
-            }
-        qDebug("GFimg::getDistance2water():distance calculate  success.\n");
-
-        // set the far pixel as the FILLVALUE the keep the influence range is circle
-        for (int row = _leftup.second; row < _rightdown.second-1; row++)
-            for (int col = _leftup.first; col < _rightdown.first-1; col++)
-            {
-               int idx = row * width + col;
-                if(distance[idx] > NEAR_POINTS_NUM)
-                {
-                    distance[idx] = FILLVALUE;
-                }
-           }
-    }
 }// EOF
 
 
@@ -745,13 +502,13 @@ void GFimg::getDistance2water(DistAlgo da)
 void GFimg::getDistance2water()
 {
     
-    qDebug("get distance\n");
+    printf("get distance\n");
     assert(wi != NULL);
     dis = (float *) CPLMalloc(sizeof(float)* width * height);
     for(int row = 1; row < height; row++)
         for(int col =1; col < width; col++)
         {
-            qDebug("r %d\n", row);
+            printf("r %d\n", row);
             int idx = row * width +col;
             if(wi[idx]) /* water*/
             {
@@ -788,12 +545,12 @@ void GFimg::getDistance2water()
             }//if wi[idx]  else
 
         }
-    qDebug("get distance done\n");
+    printf("get distance done\n");
 }
 
 void GFimg::getSVI()
 {
-    qDebug("GFimg::getSVI()...\n");
+    printf("getSVI()...\n");
     svi = (float *) CPLMalloc(sizeof(float)* width * height);
     if(ndvi == NULL){getNDVI();}
     size_t iLimit = height*width;
@@ -804,12 +561,12 @@ void GFimg::getSVI()
                 svi[i] = -2.0;
         }
 
-    qDebug("getSVI() end\n");
+    printf("getSVI() end\n");
 }
 
 void GFimg::caldensity()
 {
-    caldensity(TEST_CASE);
+    caldensity(withoutDist);
 }
 
 void GFimg::caldensity(Method me)
@@ -818,20 +575,14 @@ void GFimg::caldensity(Method me)
     /*
     if(NULL== dis){getWI();getDistance2water();}
     
-    if(wet==NULL){getKTtransform();} */
+    if(wet==NULL){KTtransform();} */
 
      density = (float *) CPLMalloc(sizeof(float)* width * height);
     if(me == withoutDist)
     { 
         if(ndwi==NULL){getNDWI();}
         getWI();
-        if(distance == NULL) {
-            getDistance2water(Water2Pixel);
-            if(distance == NULL) {
-                return;
-            }
-            write(var_dist, "distance.tiff");
-        }
+        getDistance2water(Water2Pixel); 
         assert(distance != NULL);
         for (int i = 0; i < width * height ; i++)
         {
@@ -841,17 +592,14 @@ void GFimg::caldensity(Method me)
             density[i] = 1.04525 - 8.41716* wet + 1.919549 * ndvi + 0.014895 * bright - 0.00146*4*distance[i];
       //  density[i] = 1.04525 - 8.41716* wet[i] + 1.919549 * ndvi[i] + 0.014895 * bright[i] - 0.00146 * dis[i];
         }
-        write(var_density,"density_bobo.tiff");
+        write(var_density,"density_1.tiff"); 
     }else if (me == withDist_1)
     {
         
         if(ndvi==NULL){getNDVI();}
         if(ndwi==NULL){getNDWI();}
         getWI();
-        if (distance == NULL) {
-            getDistance2water(Water2Pixel);
-            write(var_dist, "distance.tiff");
-        }
+        getDistance2water(Water2Pixel); 
         getIsShade();
         
         for ( int i = 0; i < width * height ; i++)
@@ -866,9 +614,9 @@ void GFimg::caldensity(Method me)
                 
      for (int i =0; i < width * height; i=i+1000000)
        {
-            qDebug("%f,%f,%f     ",  distance[i], ndvi[i], density[i]);
+            printf("%f,%f,%f     ",  distance[i], ndvi[i], density[i]);
         }
-//        if(wet == NULL){getKTtransform();}
+//        if(wet == NULL){KTtransform();}
 //        write(var_wet,"wet.tiff");
         write(var_isShade,"isShade.tiff");
         write(var_ndvi,"ndvi.tiff");
@@ -879,92 +627,17 @@ void GFimg::caldensity(Method me)
      //   write(var_svi,"svi.tiff");
      //   write(var_reflectance,"reflectance.tiff");
     }
-    else if (me == SVI_DIST) {
-        if(svi == NULL) {
-            getSVI();
-          //  write(var_svi,"svi.tiff");
-        }
-        if (distance == NULL ) {
-            getDistance2water(Water2Pixel); 
-          //  write(var_dist, "distance.tiff");
-        }
-
-        for ( int i = 0; i < width * height ; i++)
-        {
-            density[i] = 100*svi[i] - distance[i]/ 200;
-        }
-        //write(var_density,"density_svi_dist.tiff");
-    }
-    else if (me == TEST_CASE) {
-
-        if(svi == NULL) {
-            getSVI();
-            qDebug("caldensity(TEST_CASE)\n");
-            write(var_svi, "svi.tiff");
-        }
-    }
-}
-
-void GFimg::areacount(std::pair<int,int> leftup, std::pair<int, int> rightdown)
-{
-    if(density == NULL) {
-        qDebug("please caldensity first!\n");
-        return;
-    }
-    if(leftup.first == 0 && leftup.second == 0 && rightdown.first == 0 && rightdown.second == 0) {
-        qDebug("please invalid input!\n");
-        return;
-    }
-    int result[8] = {0,0,0,0,0,0};
-    for ( int i = leftup.first; i < rightdown.first ; i++) {
-        for(int j = leftup.second; j < rightdown.second; j++) {
-            int num = i*j;
-            if(density[num] > 0) {
-                result[0] = result[0] + 1;
-                if(density[num] > 0.5) {
-                    result[1] = result[1] +1;
-                    if(density[num] > 1) {
-                        result[2] = result[2] +1;
-                        if(density[num] > 1.5) {
-                            result[3] = result[3] +1;
-                            if(density[num] > 2) {
-                                result[4] = result[4] +1;
-                                if(density[num] > 2.5) {
-                                    result[5] = result[5] +1;
-                                    if(density[num] > 3) {
-                                        result[6] = result[6] +1;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    std::string tempsfile = this->savedir + DIR_SEPERATOR + "areacounter.txt";
-    std::ofstream file(tempsfile.c_str());
-    if(!file.is_open()) {
-        qDebug("failed to creat areacounter.txt");
-        for(int idx = 0; idx < 7; idx++) {
-            qDebug("area > %f, counter is :%d", idx/2.0, result[idx]);
-        }
-    }
-    for(int idx = 0 ; idx < 7 ; idx++) {
-        file << "area > " << idx/ 2.0 << ", counter is " << result[idx] <<std::endl;
-    }
-    qDebug("counter finished!\n");
 }
 
 
 void GFimg::getCorner()
 {
-    qDebug("extract Value...\n");
+    printf("extract Value...\n");
     TiXmlDocument doc(xmlfile.c_str());
     bool loadOkay = doc.LoadFile();  
     if (!loadOkay) {      
-        qDebug( "Could not load test file %s. Error='%s'. Exiting.\n", xmlfile.c_str(),doc.ErrorDesc() );
-        return;
+        printf( "Could not load test file %s. Error='%s'. Exiting.\n", xmlfile.c_str(),doc.ErrorDesc() );  
+        exit( 1 );  
     }
     TiXmlElement* root = doc.RootElement();  
     TiXmlNode * topleftlat = root->FirstChild("TopLeftLatitude");
@@ -983,14 +656,14 @@ void GFimg::getCorner()
     brlat =atof((char *)bottomrightlat->ToElement()->GetText());
     TiXmlNode * bottomrightlong = root->FirstChild("BottomRightLongitude");
     brlong =atof((char *)bottomrightlong->ToElement()->GetText());
-    qDebug("topleftlatitude, topleftlongitude:(%f,%f),  toprightlatitude,toprightlongitude:(%f,%f),\n bottomleftlatitude,bottomleftlongitude:(%f,%f),  bottomrightlatitude,bottomrightlongitude:(%f,%f)\n",tllat,tllong,trlat,trlong,bllat,bllong,brlat,brlong);
+    printf("topleftlatitude, topleftlongitude:(%f,%f),  toprightlatitude,toprightlongitude:(%f,%f),\n bottomleftlatitude,bottomleftlongitude:(%f,%f),  bottomrightlatitude,bottomrightlongitude:(%f,%f)\n",tllat,tllong,trlat,trlong,bllat,bllong,brlat,brlong);
 
 }
 
 void GFimg::generate_Lat_Long()
 {
     assert(!xmlfile.empty());
-    qDebug("begin to generate Latitude and Longitude...\n");
+    printf("begin to generate Latitude and Longitude...\n");
     latitude = (float *) CPLMalloc(sizeof(float) * width * height);
     longitude = (float * ) CPLMalloc(sizeof(float) * width * height);
     for(int row = 0; row < height; row++)
@@ -1005,12 +678,12 @@ void GFimg::generate_Lat_Long()
             longitude[row*width + col] = (leftlong-rightlong)/(width-1)* col + rightlong;
         }
     }
-    qDebug(" generate Latitude and Longitude Done\n");
+    printf(" generate Latitude and Longitude Done\n");
 }
 
 void GFimg::getValueByPoints(float * li,  std::vector<int> * colrowtemp)
 {
-    qDebug("begin to getValueByPoints near<%f,%f>\n", li[0],li[1]);
+    printf("begin to getValueByPoints near<%f,%f>\n", li[0],li[1]);
  //   std::vector<int> colrowtemp;
     for(int row = 0; row < height; row = row +1)
     {
@@ -1018,14 +691,14 @@ void GFimg::getValueByPoints(float * li,  std::vector<int> * colrowtemp)
         {
         int index = row * width + col;
         float input[2]={longitude[index],latitude[index]};
-      /*  qDebug("<%f,%f>--<%f,%f> = %f\n", input[0],input[1],li[0],li[1],point2point(input,li));
+      /*  printf("<%f,%f>--<%f,%f> = %f\n", input[0],input[1],li[0],li[1],point2point(input,li));
         if(fabs(input[0] - li[0]) > DIST_LIMIT_DEGREE || fabs(input[1] - li[1]) > DIST_LIMIT_DEGREE)
         {
             col = col + JUMP_NUM;
             continue;
         }else
         {
-            qDebug("<%f,%f>--<%f,%f> = %f\n", input[0],input[1],li[0],li[1],point2point(input,li));
+            printf("<%f,%f>--<%f,%f> = %f\n", input[0],input[1],li[0],li[1],point2point(input,li));
             
         }
         */
@@ -1037,7 +710,7 @@ void GFimg::getValueByPoints(float * li,  std::vector<int> * colrowtemp)
                 colrowtemp->push_back(index);
             }else
                 continue;
-           // qDebug("Xdif:%f,Ydif:%f,Dis:%f\n",fabs(input[0]-li[0]),fabs(input[1]-li[1]),point2point(input,li));
+           // printf("Xdif:%f,Ydif:%f,Dis:%f\n",fabs(input[0]-li[0]),fabs(input[1]-li[1]),point2point(input,li));
         }else
         {
             col=col+ JUMP_NUM;
@@ -1050,13 +723,13 @@ void GFimg::getValueByPoints(float * li,  std::vector<int> * colrowtemp)
             continue;
         }else if(point2point(input, li) < DIST_LIMIT_DEGREE)
         {
-            qDebug("<%f,%f>--<%f,%f> = %f\n", input[0],input[1],li[0],li[1],point2point(input,li));
+            printf("<%f,%f>--<%f,%f> = %f\n", input[0],input[1],li[0],li[1],point2point(input,li));
             colrowtemp->push_back(index);
         }
 */
         }
     }
-    qDebug("Point <%f,%f> extract Values done!\n", li[0],li[1]);
+    printf("Point <%f,%f> extract Values done!\n", li[0],li[1]);
 
 }
 
@@ -1064,7 +737,7 @@ void GFimg::print_lat_long()
 {
     for(size_t i = 0; i < width*height; i=i+width)
     {
-        qDebug("latitude,longitude:%f,%f\n", latitude[i],longitude[i]);
+        printf("latitude,longitude:%f,%f\n", latitude[i],longitude[i]);
     }
 }
 
@@ -1084,14 +757,14 @@ void GFimg::getAllValueNearLine(float *li, float * restmp)
     float latmin = (li[1] > li[3] ? li[3] : li[1]) - diflong;
     assert(longmin < longmax);
     assert(latmin < latmax);
-    qDebug("longmin,longmax,latmin,latmax:%f,%f,%f,%f\n",longmin,longmax,latmin,latmax);
-    qDebug("topleftlatitude, topleftlongitude:(%f,%f),  toprightlatitude,toprightlongitude:(%f,%f),\n bottomleftlatitude,bottomleftlongitude:(%f,%f),  bottomrightlatitude,bottomrightlongitude:(%f,%f)\n",tllat,tllong,trlat,trlong,bllat,bllong,brlat,brlong);
+    printf("longmin,longmax,latmin,latmax:%f,%f,%f,%f\n",longmin,longmax,latmin,latmax);
+    printf("topleftlatitude, topleftlongitude:(%f,%f),  toprightlatitude,toprightlongitude:(%f,%f),\n bottomleftlatitude,bottomleftlongitude:(%f,%f),  bottomrightlatitude,bottomrightlongitude:(%f,%f)\n",tllat,tllong,trlat,trlong,bllat,bllong,brlat,brlong);
     // estimate the row and lines
     int rowmin = geo2num(tllat, bllat, height, latmax);
     int rowmax = geo2num(tllat, bllat, height, latmin);
     int colmin = geo2num(tllong, trlong,width, longmin);
     int colmax = geo2num(tllong, trlong, width, longmax);
-    qDebug("rowmin,rowmax,colmin,colmax:%d,%d,%d,%d\n",rowmin,rowmax,colmin,colmax);
+    printf("rowmin,rowmax,colmin,colmax:%d,%d,%d,%d\n",rowmin,rowmax,colmin,colmax);
     if (rowmin < 0) rowmin = 0;
     if (rowmax < 0) rowmax = 0;
     if (colmin < 0) colmin = 0;
@@ -1104,7 +777,7 @@ void GFimg::getAllValueNearLine(float *li, float * restmp)
         restmp[3] = 0;
         return;
     }
-    qDebug("range of rows :[%d,%d], of cols:[%d,%d]\n",rowmin,rowmax,colmin,colmax);
+    printf("range of rows :[%d,%d], of cols:[%d,%d]\n",rowmin,rowmax,colmin,colmax);
     assert(rowmin < rowmax);
     assert(colmin < colmax);
     
@@ -1175,13 +848,12 @@ void GFimg::getAllValueNearLine(float *li, float * restmp)
 
 void GFimg::readGeoinfo(std::string geofile)
 {
-    qDebug("readGeoinfo...\n");
+    printf("readGeoinfo...\n");
     std::ifstream ifile;
     ifile.open(geofile.c_str(),std::ios::in);
-    if(!ifile.is_open())
+    if(ifile==NULL)
     {
-        qDebug("geofile file open failed!\n");
-        return;
+        printf("geofile file open failed!\n");exit(1);
     }
     int count = 0;
     char buf[1024];
@@ -1190,42 +862,41 @@ void GFimg::readGeoinfo(std::string geofile)
         count++;
     }
     this->insituPoints = count;
-    qDebug("insituPoints:%d\n",count);
+    printf("insituPoints:%d\n",count);
 //    ifile.seekg(0,std::ios::beg);
     ifile.close();
     ifile.open(geofile.c_str(),std::ios::in);
-    if(!ifile.is_open())
+    if(ifile==NULL)
     {
-        qDebug("geofile file open failed!\n");
-        return;
+        printf("geofile file open failed!\n");exit(1);
     }
     geoinfo =(float *) malloc(sizeof(float)*4 * insituPoints);
     count = 0;
+    float ap[4];
     while(ifile.getline(buf,sizeof(buf)))
     {
- //       qDebug("%s\n",buf);
+ //       printf("%s\n",buf);
       //  sscanf(buf,"%f %f %f %f",&ap[0],&ap[1],&ap[2],&ap[3]);
-     //   qDebug("%f, %f, %f, %f\n",ap[0],ap[1],ap[2],ap[3]);
+     //   printf("%f, %f, %f, %f\n",ap[0],ap[1],ap[2],ap[3]);
         sscanf(buf,"%f %f %f %f",&geoinfo[4* count],&geoinfo[4* count+1],&geoinfo[4* count+2],&geoinfo[4* count+3]);
-//        qDebug("geoinfo:%d,(%f,%f),(%f,%f)\n",count, geoinfo[4*count],geoinfo[4*count+1],geoinfo[4*count+2],geoinfo[4*count+3]);
+//        printf("geoinfo:%d,(%f,%f),(%f,%f)\n",count, geoinfo[4*count],geoinfo[4*count+1],geoinfo[4*count+2],geoinfo[4*count+3]);
         count++;
     }
-    qDebug("readGeoinfo done!\n");
+    printf("readGeoinfo done!\n");   
 
 }
 
 void GFimg::doextract(std::string savefile)
 {
-    qDebug("do extract begin\n");
+    printf("do extract begin\n");
     assert(geoinfo != NULL);
     assert(latitude != NULL || longitude != NULL);
     std::vector<int>  colrowtemp;
     std::ofstream ofile;
     ofile.open(savefile.c_str(),std::ios::out);
-    if(!ofile.is_open())
+    if(ofile == NULL)
     {
-        qDebug("savefile file open failed!:%s\n", savefile.c_str());
-        return;
+        printf("savefile file open failed!:%s\n", savefile.c_str());exit(1);
     }
     for (int idx = 0; idx < insituPoints; idx ++)
     {
@@ -1256,19 +927,18 @@ void GFimg::doextract(std::string savefile)
         }
         ofile<<std::endl;
     }
-    qDebug("do extract done\n");
+    printf("do extract done\n");
 }
 void GFimg::extractAll(std::string savefile)
 {
-    qDebug("do extract begin\n");
+    printf("do extract begin\n");
     assert(geoinfo != NULL);
     assert(latitude != NULL || longitude != NULL);
     std::ofstream ofile;
     ofile.open(savefile.c_str(),std::ios::out);
-    if(!ofile.is_open())
+    if(ofile == NULL)
     {
-        qDebug("savefile file open failed!:%s\n", savefile.c_str());
-        return;
+        printf("savefile file open failed!:%s\n", savefile.c_str());exit(1);
     }
 //    for (int idx = 0; idx < width*height; idx ++)
     for(int row =0; row < height; row=row+STEP)
@@ -1276,7 +946,7 @@ void GFimg::extractAll(std::string savefile)
         for(int col=0; col< width; col = col + STEP)
         {
             int idx = row * width + col;
-            qDebug("band1:%f,band2:%f,band3:%f,band4:%f\n",band1[idx],band2[idx],band3[idx],band4[idx]);
+            printf("band1:%f,band2:%f,band3:%f,band4:%f\n",band1[idx],band2[idx],band3[idx],band4[idx]);
             ofile<< band1[idx] << " " << band2[idx] << " " 
                 << band3[idx] << " "<< band4[idx]<< std::endl;
         }
@@ -1297,7 +967,7 @@ void GFimg::extractAll(std::string savefile)
         ofile<<std::endl;
     }
     */
-    qDebug("do extract done\n");
+    printf("do extract done\n");
 }
 
 void GFimg::writeDen(std::string sfile)
@@ -1310,7 +980,7 @@ void GFimg::writeDen(std::string sfile)
     poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
     if( poDriver == NULL )
     {
-        qDebug("GTiff is not supported.\n");
+        printf("GTiff is not supported.\n");
         return;
     }
     char **papszOptions = NULL; 
@@ -1318,12 +988,12 @@ void GFimg::writeDen(std::string sfile)
     int poBandMap[1] ={1};
     if(WriteDataSet->RasterIO(GF_Write,0,0,width,height,density,width,height,GDT_Float32,1,poBandMap,0,0,0)==CE_Failure)
     {
-            qDebug("i_write failed.\n");
+            printf("i_write failed.\n");
       //      break;
     }
    // delete WriteDataSet;
-    qDebug("write to tiff done\n");
-    GDALClose((GDALDatasetH)WriteDataSet);
+    printf("write to tiff done\n");
+
 }
 
 void GFimg::num2geo(int col, int row, float * res)
@@ -1344,37 +1014,8 @@ int GFimg::geo2num(float num1, float num2, int hw, float num3)
     return floor((num3- num1)/dif);
 }
 
-bool GFimg::copyrpb( std::string dest)
-{
-    std::string tempsfile = this->savedir + DIR_SEPERATOR + dest;
-    std::ofstream out;
-    std::ifstream in;
-    in.open(this->rpbfile.c_str(),std::ios::in);
-    if(!in.is_open()) {
-        qDebug("%s open failed",this->rpbfile.c_str());
-        return false;
-    }
-    out.open(tempsfile.c_str());
-    if(!out.is_open()) {
-        qDebug("%s create failed",tempsfile.c_str());
-        return false;
-    }
-    in.seekg(0,in.end);
-    long size = in.tellg();
-    in.seekg(0);
-    char* buffer = new char[size];
-    in.read(buffer, size);
-    out.write(buffer,size);
-    delete[] buffer;
-    out.close();
-    in.close();
-    return true;
-}
-
-
 void GFimg::write(write_var var,std::string sfile)
 {
-    std::string tempsfile = this->savedir + DIR_SEPERATOR + sfile;
     // save the ndvi variable
     if ( var == var_ndvi )
     {
@@ -1385,21 +1026,19 @@ void GFimg::write(write_var var,std::string sfile)
         poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
         if( poDriver == NULL )
         {
-            qDebug("GTiff is not supported.\n");
+            printf("GTiff is not supported.\n");
             return;
         }
         char **papszOptions = NULL; 
-        GDALDataset *WriteDataSet = poDriver->Create(tempsfile.c_str(), width,height,1,GDT_Float32,papszOptions);
+        GDALDataset *WriteDataSet = poDriver->Create(sfile.c_str(), width,height,1,GDT_Float32,papszOptions);
         int poBandMap[1] ={1};
         if(WriteDataSet->RasterIO(GF_Write,0,0,width,height,ndvi,width,height,GDT_Float32,1,poBandMap,0,0,0)==CE_Failure)
         {
-            qDebug("write ndvi failed.\n");
+            printf("write ndvi failed.\n");
         //      break;
         }
         // delete WriteDataSet;
-        qDebug("write ndvi done\n");
-        GDALClose((GDALDatasetH)WriteDataSet);
-
+        printf("write ndvi done\n");
     }
     // save the distance variable
     else if ( var == var_dist )
@@ -1411,20 +1050,19 @@ void GFimg::write(write_var var,std::string sfile)
         poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
         if( poDriver == NULL )
         {
-            qDebug("GTiff is not supported.\n");
+            printf("GTiff is not supported.\n");
             return;
         }
         char **papszOptions = NULL; 
-        GDALDataset *WriteDataSet = poDriver->Create(tempsfile.c_str(), width,height,1,GDT_Float32,papszOptions);
+        GDALDataset *WriteDataSet = poDriver->Create(sfile.c_str(), width,height,1,GDT_Float32,papszOptions);
         int poBandMap[1] ={1};
         if(WriteDataSet->RasterIO(GF_Write,0,0,width,height,distance,width,height,GDT_Float32,1,poBandMap,0,0,0)==CE_Failure)
         {
-            qDebug("write distance failed.\n");
+            printf("write distance failed.\n");
         //      break;
         }
         // delete WriteDataSet;
-        qDebug("write distance done\n");
-        GDALClose((GDALDatasetH)WriteDataSet);
+        printf("write distance done\n");
     
     }else if ( var == var_density)
     {
@@ -1435,20 +1073,19 @@ void GFimg::write(write_var var,std::string sfile)
         poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
         if( poDriver == NULL )
         {
-            qDebug("GTiff is not supported.\n");
+            printf("GTiff is not supported.\n");
             return;
         }
         char **papszOptions = NULL; 
-        GDALDataset *WriteDataSet = poDriver->Create(tempsfile.c_str(), width,height,1,GDT_Float32,papszOptions);
+        GDALDataset *WriteDataSet = poDriver->Create(sfile.c_str(), width,height,1,GDT_Float32,papszOptions);
         int poBandMap[1] ={1};
         if(WriteDataSet->RasterIO(GF_Write,0,0,width,height,density,width,height,GDT_Float32,1,poBandMap,0,0,0)==CE_Failure)
         {
-            qDebug("write density failed.\n");
+            printf("write density failed.\n");
         //      break;
         }
         // delete WriteDataSet;
-        qDebug("write density done\n");
-        GDALClose((GDALDatasetH)WriteDataSet);
+        printf("write density done\n");
     }else if (var == var_ndwi)
     {
         assert( NULL != ndwi);
@@ -1458,19 +1095,19 @@ void GFimg::write(write_var var,std::string sfile)
         poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
         if( poDriver == NULL )
         {
-            qDebug("GTiff is not supported.\n");
+            printf("GTiff is not supported.\n");
             return;
         }
         char **papszOptions = NULL; 
-        GDALDataset *WriteDataSet = poDriver->Create(tempsfile.c_str(), width,height,1,GDT_Float32,papszOptions);
+        GDALDataset *WriteDataSet = poDriver->Create(sfile.c_str(), width,height,1,GDT_Float32,papszOptions);
         int poBandMap[1] ={1};
         if(WriteDataSet->RasterIO(GF_Write,0,0,width,height,ndwi,width,height,GDT_Float32,1,poBandMap,0,0,0)==CE_Failure)
         {
-            qDebug("write ndwi failed.\n");
+            printf("write ndwi failed.\n");
         //      break;
         }
         // delete WriteDataSet;
-        GDALClose((GDALDatasetH)WriteDataSet);
+    
     
     }else if (var == var_wet)
     {
@@ -1481,19 +1118,19 @@ void GFimg::write(write_var var,std::string sfile)
         poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
         if( poDriver == NULL )
         {
-            qDebug("GTiff is not supported.\n");
+            printf("GTiff is not supported.\n");
             return;
         }
         char **papszOptions = NULL; 
-        GDALDataset *WriteDataSet = poDriver->Create(tempsfile.c_str(), width,height,1,GDT_Float32,papszOptions);
+        GDALDataset *WriteDataSet = poDriver->Create(sfile.c_str(), width,height,1,GDT_Float32,papszOptions);
         int poBandMap[1] ={1};
         if(WriteDataSet->RasterIO(GF_Write,0,0,width,height,wet,width,height,GDT_Float32,1,poBandMap,0,0,0)==CE_Failure)
         {
-            qDebug("write wet failed.\n");
+            printf("write wet failed.\n");
         //      break;
         }
         // delete WriteDataSet;
-        GDALClose((GDALDatasetH)WriteDataSet);
+        
     }else if (var == var_svi)
     {
         assert( NULL != svi);
@@ -1503,19 +1140,18 @@ void GFimg::write(write_var var,std::string sfile)
         poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
         if( poDriver == NULL )
         {
-            qDebug("GTiff is not supported.\n");
+            printf("GTiff is not supported.\n");
             return;
         }
         char **papszOptions = NULL; 
-        GDALDataset *WriteDataSet = poDriver->Create(tempsfile.c_str(), width,height,1,GDT_Float32,papszOptions);
+        GDALDataset *WriteDataSet = poDriver->Create(sfile.c_str(), width,height,1,GDT_Float32,papszOptions);
         int poBandMap[1] ={1};
         if(WriteDataSet->RasterIO(GF_Write,0,0,width,height,svi,width,height,GDT_Float32,1,poBandMap,0,0,0)==CE_Failure)
         {
-            qDebug("write wet failed.\n");
+            printf("write wet failed.\n");
         //      break;
         }
         // delete WriteDataSet;
-        GDALClose((GDALDatasetH)WriteDataSet);
     }else if (var == var_reflectance)
     {
         
@@ -1526,39 +1162,37 @@ void GFimg::write(write_var var,std::string sfile)
         poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
         if( poDriver == NULL )
         {
-            qDebug("GTiff is not supported.\n");
+            printf("GTiff is not supported.\n");
             return;
         }
         char **papszOptions = NULL; 
-        std::string b1file = this->savedir + DIR_SEPERATOR+ "band1"+sfile;
+        std::string b1file = "band1"+sfile;
         GDALDataset *WriteDataSet1 = poDriver->Create(b1file.c_str(), width,height,1,GDT_Float32,papszOptions);
         int poBandMap[1] ={1};
         if(WriteDataSet1->RasterIO(GF_Write,0,0,width,height,band1,width,height,GDT_Float32,1,poBandMap,0,0,0)==CE_Failure)
         {
-            qDebug("write band1 failed.\n");
+            printf("write band1 failed.\n");
         }
-        std::string b2file =this->savedir + DIR_SEPERATOR+ "band2"+sfile;
+        std::string b2file = "band2"+sfile;
         GDALDataset *WriteDataSet2 = poDriver->Create(b2file.c_str(), width,height,1,GDT_Float32,papszOptions);
         if(WriteDataSet2->RasterIO(GF_Write,0,0,width,height,band2,width,height,GDT_Float32,1,poBandMap,0,0,0)==CE_Failure)
         {
-            qDebug("write band2 failed.\n");
+            printf("write band2 failed.\n");
         }
-        std::string b3file =this->savedir + DIR_SEPERATOR+ "band3"+sfile;
+        std::string b3file = "band3"+sfile;
         GDALDataset *WriteDataSet3 = poDriver->Create(b3file.c_str(), width,height,1,GDT_Float32,papszOptions);
         if(WriteDataSet3->RasterIO(GF_Write,0,0,width,height,band3,width,height,GDT_Float32,1,poBandMap,0,0,0)==CE_Failure)
         {
-            qDebug("write band3 failed.\n");
+            printf("write band3 failed.\n");
         }
-        std::string b4file = this->savedir + DIR_SEPERATOR+"band4"+sfile;
+        std::string b4file = "band4"+sfile;
         GDALDataset *WriteDataSet4 = poDriver->Create(b4file.c_str(), width,height,1,GDT_Float32,papszOptions);
         if(WriteDataSet4->RasterIO(GF_Write,0,0,width,height,band4,width,height,GDT_Float32,1,poBandMap,0,0,0)==CE_Failure)
         {
-            qDebug("write band4 failed.\n");
+            printf("write band4 failed.\n");
         }
-        GDALClose((GDALDatasetH)WriteDataSet1);
-        GDALClose((GDALDatasetH)WriteDataSet2);
-        GDALClose((GDALDatasetH)WriteDataSet3);
-        GDALClose((GDALDatasetH)WriteDataSet4);
+
+
 
         // delete WriteDataSet;
         
@@ -1571,36 +1205,34 @@ void GFimg::write(write_var var,std::string sfile)
         poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
         if( poDriver == NULL )
         {
-            qDebug("GTiff is not supported.\n");
+            printf("GTiff is not supported.\n");
             return;
         }
         char **papszOptions = NULL; 
-        GDALDataset *WriteDataSet = poDriver->Create(tempsfile.c_str(), width,height,1,GDT_Float32,papszOptions);
+        GDALDataset *WriteDataSet = poDriver->Create(sfile.c_str(), width,height,1,GDT_Float32,papszOptions);
         int poBandMap[1] ={1};
         if(WriteDataSet->RasterIO(GF_Write,0,0,width,height,isShade,width,height,GDT_Float32,1,poBandMap,0,0,0)==CE_Failure)
         {
-            qDebug("write isShade failed.\n");
+            printf("write isShade failed.\n");
         //      break;
         }
         // delete WriteDataSet;
-        GDALClose((GDALDatasetH)WriteDataSet);
+    
     }else
     {
-        qDebug("unknown save type");
+    
     }
-    copyrpb(sfile);
+
 }
 
 void GFimg::extractValueByFile(std::string geofile, std::string savefile)
 {
-    std::string tempsavefile = this->savedir + DIR_SEPERATOR + savefile;
-    qDebug("extractValueByFile...\n");
+    printf("extractValueByFile...\n");
     readGeoinfo(geofile);
-    std::ofstream ofile(tempsavefile.c_str());
+    std::ofstream ofile(savefile.c_str());
     if(!ofile.is_open())
     {
-        qDebug("failed to open the savefile:%s\n",tempsavefile.c_str());
-        return;
+        printf("failed to open the savefile:%s\n",savefile.c_str());exit(1);
     }
     for(int count = 0; count < insituPoints ; count++)
     {
@@ -1609,9 +1241,9 @@ void GFimg::extractValueByFile(std::string geofile, std::string savefile)
         li[1] = geoinfo[count * 4 + 1];
         li[2] = geoinfo[count * 4 + 2];
         li[3] = geoinfo[count * 4 + 3];
-        qDebug("line:(%f,%f)-> (%f,%f)\n", li[0],li[1],li[2],li[3]);
+        printf("line:(%f,%f)-> (%f,%f)\n", li[0],li[1],li[2],li[3]);
         getAllValueNearLine(li, res);
-        qDebug("res:(%f,%f,%f,%f)\n", res[0],res[1],res[2],res[3]);
+        printf("res:(%f,%f,%f,%f)\n", res[0],res[1],res[2],res[3]);
         for(int i = 0; i < WANTED_PARAM; i++)
         {
             ofile<< res[i] << " ";
@@ -1620,4 +1252,3 @@ void GFimg::extractValueByFile(std::string geofile, std::string savefile)
     }
   //  free(geoinfo); 
 }
-

@@ -7,6 +7,7 @@
 #include <QQmlContext>
 #include "Home.h"
 #include "CCLogin.h"
+#include "imgpreview.h"
 #include <iostream>
 int main(int argc, char *argv[])
 {
@@ -14,6 +15,18 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
     qmlRegisterType<CCLogin>("CCLogin", 1, 0, "CCLogin");
-    engine.load(QUrl(QStringLiteral("qrc:/Home.qml")));
-    return app.exec();
+    qmlRegisterType<PreViewPainter>("CCPreviewPainter",1,0,"CCPainter");
+    //engine.load(QUrl(QStringLiteral("qrc:/Home.qml")));
+    QQmlComponent com(&engine, QUrl(QStringLiteral("qrc:/Home.qml")));
+    QObject * object = com.create();
+    PreViewPainter * p = object->findChild<PreViewPainter *>("CCPainter");
+    CCLogin * l = object->findChild<CCLogin *>("CCLoginUI");
+    if(p != NULL && l != NULL) {
+        QObject::connect(l,SIGNAL(sig_selectdFile(QString)),p,SLOT(onSelectedFile(QString)));
+    }
+    else
+    {
+       qDebug("PreViewPainter is NULL or CCLogin is NULL");
+    }
+        return app.exec();
 }

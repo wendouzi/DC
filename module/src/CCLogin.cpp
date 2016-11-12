@@ -99,6 +99,7 @@ CCLogin::CCLogin(): _user_id("")
     }
     connect(this,SIGNAL(sig_for_schedule(QString,QVariant)),SCHEDULE,SLOT(slot_for_UI(QString,QVariant)));
     connect(SCHEDULE,SIGNAL(sig_to_UI(QString,QVariant)),this,SLOT(slot_for_schedule(QString,QVariant)));
+
 }
 
 /* 析构函数*/
@@ -461,6 +462,7 @@ void CCLogin::slot_for_fileDialog(int s) {
         }
         qDebug("tiff file: %s \n",_tiff_file.toStdString().c_str());
         emit sig_select_file(TIFF_FILEDIALOG);
+        emit sig_selectdFile(_tiff_file);
     }
     else if (s == XML_FILEDIALOG) {
         _xml_file = _xml_file.mid(DIR_BEGIN);

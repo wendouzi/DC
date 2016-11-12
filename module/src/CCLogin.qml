@@ -5,19 +5,20 @@ import QtQuick.Controls 1.0
 import QtQuick.Controls.Styles 1.3
 import QtQuick.Layouts 1.0
 import CCLogin 1.0
+import CCPreviewPainter 1.0
 import QtQuick.Dialogs 1.1
 Rectangle {
     id: login
-    property alias mouseArea: mouseArea
+    anchors.fill: parent
+    //property alias mouseArea: mouseArea
     property bool processflag: false
-    width: 800
-    height: 400
     radius: 1
     border.color: "#590606"
     border.width: 2
     CCLogin
     {
         id:cclogin
+        objectName: "CCLoginUI"
         onSig_login_result:
         {
             //关闭登陆动画
@@ -170,23 +171,21 @@ Rectangle {
             }
         }
     }
+   /*
     MouseArea {
         id: mouseArea
         anchors.rightMargin: 0
         anchors.bottomMargin: -2
         anchors.leftMargin: 0
         anchors.topMargin: 2
-        anchors.fill: parent
     }
-
+*/
     BorderImage {
         id: background
-        x: 2
-        y: 2
-        width: 796
-        height: 396
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 2
+        anchors.rightMargin: 0
+        anchors.bottomMargin: -2
+        anchors.leftMargin: 0
+        anchors.topMargin: 2
         opacity: 0.4
         visible: true
         clip: false
@@ -199,87 +198,51 @@ Rectangle {
         id: loginUI
         anchors.fill: parent
         visible:true
-        width: 800
-        height: 400
     Text {
         id: titleCN
-        x:220
+        x:parent.width/2 - 150
         y:30
-        width: 100
+        width: 300
         height: 18
         text:qsTr("    中 国 疾 病 控 制 预 防 中 心   ")
         font.pointSize: 16
         style: Text.Raised
+        anchors.centerIn: titleCN
         font.bold: true
         //font.italic: true
     }
     Text {
         id: titleLine
-        x:220
+        x:parent.width/2 - 150
         y:50
-        width: 100
+        width: 300
         height: 10
-        text:qsTr("======================================================================")
+        text:qsTr("===========================================")
         font.pointSize: 8
         style: Text.Raised
+        anchors.centerIn: titleLine
         //font.italic: true
     }
     Text {
         id: titleEN
-        x:220
+        x:parent.width/2 - 150
         y:65
-        width: 100
+        width: 300
         height: 15
         text:qsTr("CHINESE CENTER FOR DISEASE CONTROL ADN PREVENTION")
         font.pointSize: 12
         style: Text.Raised
+        anchors.centerIn: titleEN
         font.family: "Times"
         font.bold: true
         //font.italic: true
     }
-    Text {
-        id: txtsignin
-        x: 256
-        y: 80
-        width: 116
-        height: 36
-        color: "#0a4c15"
-        text: qsTr("Please sign in !")
-        font.italic: false
-        font.bold: true
-        font.family: "Times New Roman"
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        font.pixelSize: 15
-        visible: false
-    }
-
-    TextField {
-        id: username
-        x: 286
-        y: 132
-        width: 122
-        height: 30
-        placeholderText: "Username"
-        font.pixelSize: 12
-    }
-
-    TextField {
-        id: password
-        x: 286
-        y: 182
-        width: 122
-        height: 30
-        placeholderText: "Password"
-        font.pixelSize: 12
-        echoMode: 2
-    }
 
     Text {
         id: usernametxt
-        x: 173
+        x: parent.width/2 - 100
         y: 132
-        width: 82
+        width: 100
         height: 30
         text: qsTr("用户名")
         verticalAlignment: Text.AlignVCenter
@@ -290,9 +253,9 @@ Rectangle {
 
     Text {
         id: passwordtxt
-        x: 173
+        x: parent.width/2 -100
         y: 182
-        width: 82
+        width: 100
         height: 30
         text: qsTr("密码")
         horizontalAlignment: Text.AlignHCenter
@@ -300,13 +263,32 @@ Rectangle {
         font.bold: true
         font.pixelSize: 15
     }
+    TextField {
+        id: username
+        x: parent.width/2
+        y: 132
+        width: 100
+        height: 30
+        placeholderText: "Username"
+        font.pixelSize: 12
+    }
 
+    TextField {
+        id: password
+        x: parent.width/2
+        y: 182
+        width: 100
+        height: 30
+        placeholderText: "Password"
+        font.pixelSize: 12
+        echoMode: 2
+    }
 
     Button {
         id: loginbtn
-        x: 173
+        x: parent.width/2 - 100
         y: 236
-        width: 235
+        width: 200
         height: 32
         text: qsTr("   登    录   ")
         checkable: false
@@ -334,9 +316,9 @@ Rectangle {
         }
         Text {
             id: copyright
-            x:80
-            y:370
-            width: 600
+            x:60
+            y:440
+            width: 800
             height: 25
             text:qsTr("Copyright © 2016 Powered By Chinese Center for Disease Control and Prevention. All rights reserved.")
             font.pixelSize: 14
@@ -400,11 +382,9 @@ Rectangle {
         id: normalUI
         anchors.fill: parent
         visible:false
-        width: 800
-        height: 400
         Text {
             id: normalUIwelcome
-            x:160
+            x:60
             y:20
             width: 480
             height: 40
@@ -424,36 +404,32 @@ Rectangle {
             id: normalUIbg
             x: 2
             y: 2
-            width: 796
-            height: 396
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 2
+            anchors.fill:parent
             opacity: 0.4
             visible: true
             clip: false
             source: "qrc:///home_bg.jpg"
-            anchors.fill: parent
         }
         Item {
             id: tiffpart
 
             Text {
                 id: text1
-                x: 80
+                x: 40
                 y: 60
                 width: 80
                 height: 40
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
-                text: qsTr("Tiff file")
+                text: qsTr("选择Tiff文件")
                 color: "#590606"
-                font.pixelSize: 12
+                font.pixelSize: 14
             }
             TextField {
                 id: textInput1
-                x: 170
+                x: 140
                 y: 60
-                width: 300
+                width: 200
                 height: 40
                 readOnly: false
                 placeholderText: "Select \".tiff \" file"
@@ -461,7 +437,7 @@ Rectangle {
             }
             Button {
                 id: tiffselectbtn1
-                x: 480
+                x: 360
                 y: 60
                 width: 80
                 height: 40
@@ -497,21 +473,21 @@ Rectangle {
 
             Text {
                 id: text2
-                x: 80
+                x: 40
                 y: 120
                 width: 80
                 height: 40
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
-                text: qsTr("xml file")
+                text: qsTr("选择xml文件")
                 color: "#590606"
-                font.pixelSize: 12
+                font.pixelSize: 14
             }
             TextField {
                 id: textInput2
-                x: 170
+                x: 140
                 y: 120
-                width: 300
+                width: 200
                 height: 40
                 readOnly: false
                 placeholderText: "Select \".xml \" file"
@@ -519,7 +495,7 @@ Rectangle {
             }
             Button {
                 id: tiffselectbtn2
-                x: 480
+                x: 360
                 y: 120
                 width: 80
                 height: 40
@@ -555,21 +531,21 @@ Rectangle {
 
             Text {
                 id: text3
-                x: 80
+                x: 40
                 y: 180
                 width: 80
                 height: 40
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
-                text: qsTr("rpb file")
+                text: qsTr("选择RPB文件")
                 color: "#590606"
-                font.pixelSize: 12
+                font.pixelSize: 14
             }
             TextField {
                 id: textInput3
-                x: 170
+                x: 140
                 y: 180
-                width: 300
+                width: 200
                 height: 40
                 readOnly: false
                 placeholderText: "Select \".rpb \" file"
@@ -577,7 +553,7 @@ Rectangle {
             }
             Button {
                 id: tiffselectbtn3
-                x: 480
+                x: 360
                 y: 180
                 width: 80
                 height: 40
@@ -613,21 +589,21 @@ Rectangle {
 
             Text {
                 id: text4
-                x: 80
+                x: 40
                 y: 240
                 width: 80
                 height: 40
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
-                text: qsTr("save directory")
+                text: qsTr("选择输出文件夹")
                 color: "#590606"
-                font.pixelSize: 12
+                font.pixelSize: 14
             }
             TextField {
                 id: textInput4
-                x: 170
+                x: 140
                 y: 240
-                width: 300
+                width: 200
                 height: 40
                 readOnly: false
                 placeholderText: "Select output directory"
@@ -635,7 +611,7 @@ Rectangle {
             }
             Button {
                 id: tiffselectbtn4
-                x: 480
+                x: 360
                 y: 240
                 width: 80
                 height: 40
@@ -708,74 +684,66 @@ Rectangle {
 
         }
 */
-        Row {
+        Column {
             id: outputproducts
-            x: 100
+            x: 40
             y: 300
-            width: 400
-            height: 40
-            spacing: 4
-            CheckBox {
-                id:ndviproduct
-                text: qsTr("NDVI")
-               // style: checkStyle
-                checked: cclogin.ndvi_prod
+            width: 300
+            height: 70
+            spacing: 10
+            Row {
+                CheckBox {
+                    id:ndviproduct
+                    text: qsTr("NDVI")
+                   // style: checkStyle
+                    checked: cclogin.ndvi_prod
+                }
+                CheckBox {
+                    id:ndwiproduct
+                    text: qsTr("NDWI")
+                   // style: checkStyle
+                    checked: cclogin.ndwi_prod
+                }
+                CheckBox {
+                    id:sviproduct
+                    text: qsTr("SVI")
+                   // style: checkStyle
+                    checked: cclogin.svi_prod
+                }
+                CheckBox {
+                    id:distanceproduct
+                    text: qsTr("与水距离")
+                   // style: checkStyle
+                    checked: cclogin.distance_prod
+                }
             }
-            CheckBox {
-                id:ndwiproduct
-                text: qsTr("NDWI")
-               // style: checkStyle
-                checked: cclogin.ndwi_prod
-            }
-            CheckBox {
-                id:sviproduct
-                text: qsTr("SVI")
-               // style: checkStyle
-                checked: cclogin.svi_prod
-            }
-            CheckBox {
-                id:distanceproduct
-                text: qsTr("与水距离")
-               // style: checkStyle
-                checked: cclogin.distance_prod
-            }
-            CheckBox {
-                id:ktproduct
-                text: qsTr("KT-transform")
-               // style: checkStyle
-                checked: cclogin.KT_prod
-            }
-            /*
-            CheckBox {
-                id:ktwetproduct
-                text: qsTr("KT-wet")
-                style: checkStyle
-                checked: false
-            }
-            CheckBox {
-                id:ktgreenproduct
-                text: qsTr("KT-green")
-                style: checkStyle
-                checked: false
-            }
-            */
-            CheckBox {
-                id:dingluoproduct
-                text: qsTr("钉螺预测")
-              //  style: checkStyle
-                checked: cclogin.dingluo_prod
-            }
-            CheckBox {
-                id:fengxianproduct
-                text: qsTr("风险评估")
-              //  style: checkStyle
-                checked: cclogin.fengxian_prod
+            Row {
+                CheckBox {
+                    id:ktproduct
+                    text: qsTr("缨帽变换")
+                   // style: checkStyle
+                    checked: cclogin.KT_prod
+                }
+
+                CheckBox {
+                    id:dingluoproduct
+                    text: qsTr("钉螺预测")
+                  //  style: checkStyle
+                    checked: cclogin.dingluo_prod
+                }
+                CheckBox {
+                    id:fengxianproduct
+                    text: qsTr("风险评估")
+                  //  style: checkStyle
+                    checked: cclogin.fengxian_prod
+                }
             }
         }
+
         Button {
             id: precessbtn
-            x: 640
-            y: 320
+            x: 40
+            y: 400
             width: 120
             height: 40
             text: qsTr("开始处理")
@@ -792,9 +760,9 @@ Rectangle {
         }
         Button {
             id: cancelbtn
-            x: 500
-            y: 100
-            width: 80
+            x: 200
+            y: 400
+            width: 120
             height: 40
             text: qsTr("取消")
             checkable: false
@@ -804,71 +772,15 @@ Rectangle {
             scale: 1
             clip: false
             activeFocusOnPress: true
-            visible: processflag
-            //visible : false
+            //visible: processflag
+            visible : true
+            enabled:processflag
             onClicked:cclogin.slot_cancel_process()
         }
         Button {
-            id: beforepreviewbtn
-            x: 680
-            y: 60
-            width: 80
-            height: 40
-            text: qsTr("预览")
-            checkable: false
-            antialiasing: false
-            z: 0
-            rotation: 0
-            scale: 1
-            clip: false
-            activeFocusOnPress: true
-            //visible: processflag
-            visible : true
-            enabled: false
-            //onClicked:{}
-        }
-        Button {
-            id: afterpreviewbtn
-            x: 680
-            y: 120
-            width: 80
-            height: 40
-            text: qsTr("结果预览")
-            checkable: false
-            antialiasing: false
-            z: 0
-            rotation: 0
-            scale: 1
-            clip: false
-            activeFocusOnPress: true
-            //visible: processflag
-            visible : true
-            enabled: false
-            //onClicked:{}
-        }
-        Button {
-            id: comparepreviewbtn
-            x: 680
-            y: 180
-            width: 80
-            height: 40
-            text: qsTr("影像对比")
-            checkable: false
-            antialiasing: false
-            z: 0
-            rotation: 0
-            scale: 1
-            clip: false
-            activeFocusOnPress: true
-            //visible: processflag
-            visible : true
-            enabled: false
-            //onClicked:{}
-        }
-        Button {
             id: poiselectbtn
-            x: 680
-            y: 240
+            x: 360
+            y: 400
             width: 80
             height: 40
             text: qsTr("POI统计")
@@ -884,13 +796,97 @@ Rectangle {
             enabled: false
             //onClicked:{}
         }
-       Image{
+        Button {
+            id: beforepreviewbtn
+            x: 200
+            y: 400
+            width: 80
+            height: 40
+            text: qsTr("预览")
+            checkable: false
+            antialiasing: false
+            z: 0
+            rotation: 0
+            scale: 1
+            clip: false
+            activeFocusOnPress: true
+            //visible: processflag
+            visible : false
+            enabled: false
+            //onClicked:{}
+        }
+        Button {
+            id: afterpreviewbtn
+            x: 300
+            y: 400
+            width: 120
+            height: 40
+            text: qsTr("结果预览")
+            checkable: false
+            antialiasing: false
+            z: 0
+            rotation: 0
+            scale: 1
+            clip: false
+            activeFocusOnPress: true
+            //visible: processflag
+            visible : false
+            enabled: false
+            //onClicked:{}
+        }
+        Button {
+            id: comparepreviewbtn
+            x: 400
+            y: 400
+            width: 80
+            height: 40
+            text: qsTr("影像对比")
+            checkable: false
+            antialiasing: false
+            z: 0
+            rotation: 0
+            scale: 1
+            clip: false
+            activeFocusOnPress: true
+            //visible: processflag
+            visible : false
+            enabled: false
+            //onClicked:{}
+        }
+
+        Item {
            id:preview
-           x:650
-           y:100
-           width: 100;
-           height: 100;
-           visible: false
+           x:500 //476
+           y:40
+           width: painter.previewwidth+4
+           height: painter.previewheight+4
+           visible: true
+
+
+
+           Rectangle {
+               anchors.fill: parent
+               border.width: 2
+               border.color: "darkblue"
+           }
+           Text {
+               x:parent.width/2 - 60
+               y:parent.height/2 - 30
+               width:60
+               height:60
+               text:qsTr("图像操作区")
+               font.italic: true
+               color:"#590606"
+               font.pointSize: 20
+           }
+
+           CCPainter {
+               objectName: "CCPainter"
+               x:2
+               y:2
+               id:painter
+               anchors.fill: parent
+           }
        }
 
  /*
