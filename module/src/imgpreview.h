@@ -12,6 +12,7 @@
 #include "QLineF"
 #include "QPointF"
 #include "CCImage.h"
+#include "QThread"
 #define RGB_SCALE int(2550)
 #define GF_PREVIEW  QString("gf.preview")
 #define AUTO_FILL_COLOR QString("black")
@@ -75,6 +76,27 @@ private:
     QRectF * m_rectF;
     CCImage * m_ccimage;
 };
+
+class PreView: public QQuickPaintedItem {
+    Q_OBJECT
+    QThread workThread;
+public:
+    PreView(QQuickItem * parent = 0);
+    ~PreView();
+    void paint(QPainter *painter);
+public slots:
+    void onSelectedFile(QString q);
+    void onImageReady();
+signals:
+    void sig_prepare_image(QString q);
+    void sig_paint_img(QString q, QPainter* painter);
+private:
+    bool m_bupdate;
+    QString m_LastFile;
+    QRectF * m_rectF;
+    ImageManager * m_ImageManager;
+};
+
 
 #endif // IMGPREVIEW
 

@@ -4,6 +4,9 @@
 #include "QImage"
 #include "gdal_priv.h"
 #include <stdio.h>
+#include "QRectF"
+#include "QPainter"
+#include "QException"
 CCImage * CCImage::ccimg = NULL;
 CCImage * CCImage::getInstance() {
     qDebug("CCImage::getInstance()");
@@ -17,6 +20,7 @@ CCImage * CCImage::getInstance() {
 }
 
 CCImage::CCImage() {
+    qDebug("CCImage::CCImage(), constructor");
     ccimg = NULL; qimg = NULL;
 }
 
@@ -129,7 +133,7 @@ void CCImage::initImg(std::string tfile) {
         GDALClose((GDALDatasetH)pDataset);
         CPLFree(pMemDatatemp);
 
-        if(!qimg) {
+        if(qimg == NULL) {
             qimg = new QImage(PREVIEW_WIDTH,PREVIEW_HEIGHT,QImage::Format_ARGB32_Premultiplied);
             qimg->fill(QColor(Qt::white).rgb());
         }
@@ -139,5 +143,40 @@ void CCImage::initImg(std::string tfile) {
             }
         }
       CPLFree(pMemData1); CPLFree(pMemData2);CPLFree(pMemData3);
+      qDebug("CCImage::initImage done");
+    }
+}
+
+ImageManager::ImageManager() {
+    qDebug("ImageManager::ImageManager() constructor");
+}
+
+ImageManager::~ImageManager() {
+    qDebug("ImageManager::~ImageManager() destructor");
+}
+
+void ImageManager::slot_prepare_image(QString q) {
+    qDebug("ImageManager::slot_prepare_image()[%s] begin",q.toStdString().c_str());
+    CCImage * m_ccimage = CCImage::getInstance();
+    m_ccimage->initImg(q.toStdString());
+    emit sig_image_ready();
+    qDebug("ImageManager::slot_prepare_image() done");
+}
+
+void ImageManager::slot_paint_image(QString q, QPainter * painter) {
+    qDebug("ImageManager::slot_paint_image");
+    CCImage * m_ccimage = CCImage::getInstance();
+    m_ccimage->initImg(q.toStdString());
+    QImage * qimg = m_ccimage->getImg();
+    if(qimg == NULL) {
+        qDebug("qimg is NULL");
+    }
+    else {
+   // qimg = new QImage(PREVIEW_WIDTH,PREVIEW_HEIGHT,QImage::Format_ARGB32_Premultiplied);
+   // qimg->fill(QColor(Qt::white).rgb());
+        //painter->setRenderHint(QPainter::Antialiasing);
+   QRectF *m_rectF = new QRectF(0,0,PREVIEW_WIDTH,PREVIEW_HEIGHT);
+        // painter->drawImage(*m_rectF,*qimg);
+
     }
 }

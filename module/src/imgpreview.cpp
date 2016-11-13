@@ -212,3 +212,62 @@ void PreViewPainter::paint(QPainter *painter) {
                       ,m_element.getLastPoint()->ry() - m_element.getStartPoint()->ry()
                       );
 }
+
+PreView::PreView(QQuickItem *parent):
+    QQuickPaintedItem(parent)
+  , m_LastFile(INVALIDSELECT)
+  , m_rectF(NULL)
+  , m_bupdate(false)
+{
+    qDebug("PreView::PreView() constructor");
+    m_ImageManager = new ImageManager();
+    m_ImageManager->moveToThread(&workThread);
+    connect(&workThread,SIGNAL(finished()), m_ImageManager,SLOT(deleteLater()));
+    connect(this,SIGNAL(sig_prepare_image(QString)),m_ImageManager,SLOT(slot_prepare_image(QString)));
+    connect(m_ImageManager,SIGNAL(sig_image_ready()),this,SLOT(onImageReady()));
+    connect(this,SIGNAL(sig_paint_img(QString, QPainter*)), m_ImageManager,SLOT(slot_paint_image(QString,QPainter*)));
+    workThread.start();
+}
+
+PreView::~PreView() {
+    qDebug("PreView::~PreView() destructor");
+    disconnect(this,SIGNAL(sig_prepare_image(QString)),m_ImageManager,SLOT(slot_prepare_image(QString)));
+    disconnect(m_ImageManager,SIGNAL(sig_image_ready()),this,SLOT(onImageReady()));
+    disconnect(this,SIGNAL(sig_paint_img(QString,QPainter*)), m_ImageManager,SLOT(slot_paint_image(QString,QPainter*)));
+    workThread.quit();
+    workThread.wait();
+}
+
+void PreView::paint(QPainter *painter) {
+    qDebug("PreView::paint()");
+        if(m_bupdate) {
+            CCImage * m_ccimage = CCImage::getInstance();
+            QImage *qimg = m_ccimage->getImg();
+            if(qimg != NULL) {
+              painter->setRenderHint(QPainter::Antialiasing);
+              QRectF qr(2,2,PREVIEW_WIDTH,PREVIEW_HEIGHT);
+                painter->drawImage(qr,*qimg);
+            }
+            m_bupdate = false;
+
+    }
+}
+
+void PreView::onSelectedFile(QString q) {
+    qDebug("PreViewPainter::onSelectedFile()");
+    if(q.compare(INVALIDSELECT) != 0 && q.compare(m_LastFile) !=0){
+        emit sig_prepare_image(q);
+        qDebug("emit signal to prepare image");
+    }
+    else {
+    }
+    m_LastFile = q;
+    //m_bupdate = true;
+    //this->update();
+}
+
+void PreView::onImageReady() {
+    qDebug("receiver the signal of image ready");
+    m_bupdate = true;
+    this->update();
+}

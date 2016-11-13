@@ -7,6 +7,7 @@ import QtQuick.Layouts 1.0
 import CCLogin 1.0
 import CCPreviewPainter 1.0
 import QtQuick.Dialogs 1.1
+import CCPreview 1.0
 Rectangle {
     id: login
     anchors.fill: parent
@@ -879,7 +880,13 @@ Rectangle {
                color:"#590606"
                font.pointSize: 20
            }
-
+           CCPreview {
+               objectName: "CCPreviewer"
+               x:2
+               y:2
+               id:previewer
+               anchors.fill: parent
+           }
            CCPainter {
                objectName: "CCPainter"
                x:2

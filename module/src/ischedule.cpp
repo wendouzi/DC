@@ -33,6 +33,8 @@ ischedule::~ischedule() {
     disconnect(this,SIGNAL(sig_to_imgcontrol(QString,QString,QString,QString,QString)),m_pic, SLOT(slot_to_process(QString,QString,QString,QString,QString)));
     disconnect(m_pic, SIGNAL(sig_to_schedule(QString)),this, SLOT(slot_for_imgcontrol(QString)));
     delete cancelFlag::getInstance();
+    workThread.quit();
+    workThread.wait();
 }
 void ischedule::slot_for_UI(QString q,QVariant s) {
     qDebug("ischedule::slot_for_UI(), cmd : %s ", q.toStdString().c_str());
