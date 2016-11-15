@@ -32,7 +32,8 @@ class CCLogin : public QObject
     Q_PROPERTY(QString file_rpb READ file_rpb WRITE setFile_rpb NOTIFY sig_file_rpbChanged)
     //属性：save dir
     Q_PROPERTY(QString save_dir READ save_dir WRITE setSave_dir NOTIFY sig_save_dirChanged)
-
+    //属性：POI 经纬度文件
+    Q_PROPERTY(QString file_poi READ file_poi WRITE setFile_poi NOTIFY file_poiChanged)
     //***************checkbox****************************/
     // attribute: checkbox ndvi
     Q_PROPERTY(bool ndvi_prod READ ndvi_prod WRITE setNdvi_prod NOTIFY sig_wantedProducts_Changed)
@@ -106,6 +107,12 @@ public:
     QString save_dir();
     /* set rpb file */
     void setSave_dir(QString sd);
+
+    /* read poi file */
+    QString file_poi();
+    /* set poi file */
+    void setFile_poi(QString fp);
+
     /* 自动登陆标志位设置 */
     void set_flag_auto(bool isauto);
 
@@ -167,6 +174,7 @@ public:
 
     void sig_wantedProducts_Changed(int s);
 
+    void file_poiChanged();
     /*********************************************************************
         *                           信号:登陆结果
         *参数:result:0:成功
@@ -251,6 +259,8 @@ private:
     QString _rpb_file;
     /* save dir */
     QString _save_dir;
+    /* poi_file */
+    QString _poi_file;
     /*   滴答定时器 */
     QTimer *timer;
     /* 登录计数 */

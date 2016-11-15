@@ -23,6 +23,7 @@ const AppId InvalidAppId = 0xffffffff;
 #define XML_FILE_NAME           QString("xml.file.name")
 #define RPB_FILE_NAME           QString("rpb.file.name")
 #define SAVE_DIR_NAME           QString("save.dir.name")
+#define POI_FILE_NAME           QString("poi.file.name")
 #define WANTEDPRODUCTS          QString("wanted.products")
 
 #define INVALIDSELECT  QString("invalid.selected.file")
@@ -31,6 +32,7 @@ const AppId InvalidAppId = 0xffffffff;
 #define XML_FILEDIALOG     int(2)
 #define RPB_FILEDIALOG     int(3)
 #define SDIR_FILEDIALOG    int(4)
+#define POI_FILEDIALOG     int(5)
 
 #define TOTAL_PRODUCTS     int(7)
 #define NDVI_ORDER         int(0)

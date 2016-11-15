@@ -18,7 +18,7 @@ ischedule::ischedule():QObject()
     m_pic = new ImgControl();
     m_pic->moveToThread(&workThread);
     connect(&workThread, SIGNAL(finished()), m_pic, SLOT(deleteLater()));
-    connect(this,SIGNAL(sig_to_imgcontrol(QString,QString,QString,QString,QString)),m_pic, SLOT(slot_to_process(QString,QString,QString,QString,QString)));
+    connect(this,SIGNAL(sig_to_imgcontrol(QString,QString,QString,QString,QString,QString)),m_pic, SLOT(slot_to_process(QString,QString,QString,QString,QString,QString)));
     connect(m_pic, SIGNAL(sig_to_schedule(QString)),this, SLOT(slot_for_imgcontrol(QString)));
     bool b =connect(this,SIGNAL(sig_to_imgcontrol_cancel(QString)),m_pic,SLOT(slot_for_cancel(QString)));
     if(!b) {
@@ -30,9 +30,9 @@ ischedule::~ischedule() {
     qDebug("ischedule::~ischedule() destruct func");
     disconnect(this,SIGNAL(sig_to_imgcontrol_cancel(QString)),m_pic,SLOT(slot_for_cancel(QString)));
     disconnect(&workThread, SIGNAL(finished()), m_pic, SLOT(deleteLater()));
-    disconnect(this,SIGNAL(sig_to_imgcontrol(QString,QString,QString,QString,QString)),m_pic, SLOT(slot_to_process(QString,QString,QString,QString,QString)));
+    disconnect(this,SIGNAL(sig_to_imgcontrol(QString,QString,QString,QString,QString,QString)),m_pic, SLOT(slot_to_process(QString,QString,QString,QString,QString,QString)));
     disconnect(m_pic, SIGNAL(sig_to_schedule(QString)),this, SLOT(slot_for_imgcontrol(QString)));
-    delete cancelFlag::getInstance();
+    //delete cancelFlag::getInstance();
     workThread.quit();
     workThread.wait();
 }
@@ -52,6 +52,7 @@ void ischedule::slot_for_UI(QString q,QVariant s) {
         m_frpb = qm.value(RPB_FILE_NAME).toString();
         m_fxml = qm.value(XML_FILE_NAME).toString();
         m_dsave = qm.value(SAVE_DIR_NAME).toString();
+        m_fpoi = qm.value(POI_FILE_NAME).toString();
         m_wantedProducts = qm.value(WANTEDPRODUCTS).toString();
         // if file is not empty
         if(m_ftiff.isEmpty() || m_fxml.isEmpty()
@@ -77,7 +78,7 @@ void ischedule::slot_for_UI(QString q,QVariant s) {
 
 void ischedule::img_process_begin() {
     qDebug("ischedule::img_process_begin");
-    emit sig_to_imgcontrol(m_ftiff, m_fxml, m_frpb, m_dsave,m_wantedProducts);
+    emit sig_to_imgcontrol(m_ftiff, m_fxml, m_frpb, m_dsave,m_wantedProducts,m_fpoi);
 }
 
 void ischedule::slot_for_imgcontrol(QString s) {

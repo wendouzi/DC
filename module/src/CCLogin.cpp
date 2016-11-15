@@ -205,6 +205,16 @@ void CCLogin::setSave_dir(QString sd)
     _save_dir = sd;
 }
 
+/* read poi file */
+QString CCLogin::file_poi() {
+    return _poi_file;
+}
+
+/* set poi file */
+void CCLogin::setFile_poi(QString fp) {
+    _poi_file = fp;
+}
+
 /* read ndvi wanted or not */
 bool CCLogin::ndvi_prod()
 {
@@ -351,6 +361,7 @@ void CCLogin::slot_finish_select()
     qDebug("xml file: %s \n",_xml_file.toStdString().c_str());
     qDebug("rpb file: %s \n",_rpb_file.toStdString().c_str());
     qDebug("save dir: %s \n",_save_dir.toStdString().c_str());
+    qDebug("poi file: %s \n", _poi_file.toStdString().c_str());
     for (int i = 0 ; i < TOTAL_PRODUCTS; ++i)
     {
         qDebug("wantedProducts[%d] = %s", i, wantedProducts[i] ? "true":"false" );
@@ -386,6 +397,12 @@ void CCLogin::slot_finish_select()
                     qm.insert(RPB_FILE_NAME,QVariant(_rpb_file));
                     qm.insert(SAVE_DIR_NAME,QVariant(_save_dir));
                     qm.insert(WANTEDPRODUCTS,QVariant(prods));
+                    if(QFile::exists(_poi_file) && _poi_file.endsWith(".txt")) {
+                        qm.insert(POI_FILE_NAME,QVariant(_poi_file));
+                    }
+                    else {
+                        qm.insert(POI_FILE_NAME,QVariant(FILE_EMPTY));
+                    }
                     qv = QVariant(qm);
                     emit sig_for_schedule(REQ_IMG_PRO_START,qv);
                 }
@@ -478,5 +495,10 @@ void CCLogin::slot_for_fileDialog(int s) {
         _save_dir = _save_dir.mid(DIR_BEGIN);
         qDebug("tiff file: %s \n",_save_dir.toStdString().c_str());
         emit sig_select_file(SDIR_FILEDIALOG);
+    }
+    else if (s == POI_FILEDIALOG) {
+        _poi_file = _poi_file.mid(DIR_BEGIN);
+        qDebug("poi file :%s \n", _poi_file.toStdString().c_str());
+        emit sig_select_file(POI_FILEDIALOG);
     }
 }

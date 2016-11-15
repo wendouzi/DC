@@ -24,7 +24,7 @@ void ImgControl::slot_for_cancel(QString s) {
     }
 }
 
-void ImgControl::slot_to_process(QString _tiff, QString _xml, QString _rpb, QString _sdir, QString prods) {
+void ImgControl::slot_to_process(QString _tiff, QString _xml, QString _rpb, QString _sdir, QString prods, QString _poi) {
     qDebug("ImgControl::slot_to_process");
     QChar sep = QDir::separator();
     QString sFilePath = _sdir+ sep+ QString("README.txt");
@@ -131,12 +131,24 @@ void ImgControl::slot_to_process(QString _tiff, QString _xml, QString _rpb, QStr
             out<< QString("RISK function still not finished ") << endl;
         }
     }
+    if(_poi.compare(FILE_EMPTY) != 0) {
+        if(cancelFlag::getInstance()->getCancelFlag()) {
+
+        }
+        else {
+            out<< QString("Begin to extract POIs ") << endl;
+            QString extractFilePath = _sdir+ sep+ QString("extractResult.txt");
+            m_pGF->generate_Lat_Long();
+            m_pGF->readGeoinfo(_poi.toStdString());
+            m_pGF->doextract(extractFilePath.toStdString());
+        }
+    }
+
     if(cancelFlag::getInstance()->getCancelFlag()) {
         out<<QString("cancel process")<<endl;
         qDebug("imgcontrol::slot_to_progress,cancel procecss");
         emit sig_to_schedule(RES_IMG_PRO_CANCEL);
         cancelFlag::getInstance()->setCancelFlag(false);
-
     }
     else {
         std::pair<int,int> lu(1880,4990);

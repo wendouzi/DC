@@ -1199,26 +1199,52 @@ void GFimg::readGeoinfo(std::string geofile)
         qDebug("geofile file open failed!\n");
         return;
     }
-    geoinfo =(float *) malloc(sizeof(float)*4 * insituPoints);
+    geoinfo =(float *) malloc(sizeof(float)*2 * insituPoints);
     count = 0;
     while(ifile.getline(buf,sizeof(buf)))
     {
  //       qDebug("%s\n",buf);
       //  sscanf(buf,"%f %f %f %f",&ap[0],&ap[1],&ap[2],&ap[3]);
      //   qDebug("%f, %f, %f, %f\n",ap[0],ap[1],ap[2],ap[3]);
-        sscanf(buf,"%f %f %f %f",&geoinfo[4* count],&geoinfo[4* count+1],&geoinfo[4* count+2],&geoinfo[4* count+3]);
+        sscanf(buf,"%f %f",&geoinfo[2* count],&geoinfo[2* count+1]);
 //        qDebug("geoinfo:%d,(%f,%f),(%f,%f)\n",count, geoinfo[4*count],geoinfo[4*count+1],geoinfo[4*count+2],geoinfo[4*count+3]);
         count++;
     }
     qDebug("readGeoinfo done!\n");
+}
 
+void GFimg::writePOIs(std::string poifile, std::string savefile) {
+    qDebug("GFimg::writePOIs, poi input file: %s, save output file :%s", poifile.c_str(), savefile.c_str());
+
+}
+
+void GFimg::readRpbCoefs(const std::string rf) {
+    qDebug("GFimg::readRpbCoefs()");
+    std::string Rwanted;
+    if(rf.compare(FILE_EMPTY.toStdString()) == 0) {
+        Rwanted = rpbfile;
+    }
+    else {
+        Rwanted = rf;
+    }
+/*    std::fstream ifile;
+    ifile.open(Rwanted,std::ios::in);
+    if(!ifile.is_open())
+    {
+        qDebug("RPB file open error");
+        return;
+    }
+    assert(true == false);
+*/
 }
 
 void GFimg::doextract(std::string savefile)
 {
     qDebug("do extract begin\n");
     assert(geoinfo != NULL);
-    assert(latitude != NULL || longitude != NULL);
+    if(latitude == NULL || longitude == NULL) {
+        generate_Lat_Long();
+    }
     std::vector<int>  colrowtemp;
     std::ofstream ofile;
     ofile.open(savefile.c_str(),std::ios::out);
@@ -1227,23 +1253,31 @@ void GFimg::doextract(std::string savefile)
         qDebug("savefile file open failed!:%s\n", savefile.c_str());
         return;
     }
+
+    if(density == NULL) {
+        caldensity(SVI_DIST);
+    }
+    ofile<<"Num latitude longitude band1 band2 band3 band4 svi distance density"<<std::endl;
     for (int idx = 0; idx < insituPoints; idx ++)
     {
         colrowtemp.clear();
-        float input[2] = {geoinfo[idx*4],geoinfo[idx*4+1]};
+        float input[2] = {geoinfo[idx*2],geoinfo[idx*2+1]};
         getValueByPoints(input,&colrowtemp);
         //assert(true==false);
-        ofile << input[0] <<" "<< input[1]<< " ";
+        ofile << idx <<" " <<input[0] <<" "<< input[1]<< " ";
         std::cout <<"size of colrowtemp: "<< colrowtemp.size()<<std::endl;
         for(int i =0; i < colrowtemp.size(); i++)
         {
             ofile << band1[colrowtemp[i]] << " " << band2[colrowtemp[i]] << " " 
-                << band3[colrowtemp[i]] << " "<< band4[colrowtemp[i]]<<" ";
+                << band3[colrowtemp[i]] << " "<< band4[colrowtemp[i]] <<" "
+                << svi[colrowtemp[i]] << " "<< distance[colrowtemp[i]] <<" "
+                << density[colrowtemp[i]] <<" ";
         }
         ofile<<std::endl;
 /////////////////////////////////////////////////////////////
 
         colrowtemp.clear();
+        /*
         float input2[2] = {geoinfo[idx*4+2],geoinfo[idx*4+3]};
         getValueByPoints(input2,&colrowtemp);
         //assert(true==false);
@@ -1255,6 +1289,7 @@ void GFimg::doextract(std::string savefile)
                 << band3[colrowtemp[i]] << " "<< band4[colrowtemp[i]]<<" ";
         }
         ofile<<std::endl;
+        */
     }
     qDebug("do extract done\n");
 }
@@ -1398,6 +1433,7 @@ void GFimg::write(write_var var,std::string sfile)
         }
         // delete WriteDataSet;
         qDebug("write ndvi done\n");
+        WriteDataSet->FlushCache();
         GDALClose((GDALDatasetH)WriteDataSet);
 
     }
@@ -1424,6 +1460,7 @@ void GFimg::write(write_var var,std::string sfile)
         }
         // delete WriteDataSet;
         qDebug("write distance done\n");
+        WriteDataSet->FlushCache();
         GDALClose((GDALDatasetH)WriteDataSet);
     
     }else if ( var == var_density)
@@ -1448,6 +1485,7 @@ void GFimg::write(write_var var,std::string sfile)
         }
         // delete WriteDataSet;
         qDebug("write density done\n");
+        WriteDataSet->FlushCache();
         GDALClose((GDALDatasetH)WriteDataSet);
     }else if (var == var_ndwi)
     {
@@ -1470,6 +1508,7 @@ void GFimg::write(write_var var,std::string sfile)
         //      break;
         }
         // delete WriteDataSet;
+        WriteDataSet->FlushCache();
         GDALClose((GDALDatasetH)WriteDataSet);
     
     }else if (var == var_wet)
@@ -1493,6 +1532,7 @@ void GFimg::write(write_var var,std::string sfile)
         //      break;
         }
         // delete WriteDataSet;
+        WriteDataSet->FlushCache();
         GDALClose((GDALDatasetH)WriteDataSet);
     }else if (var == var_svi)
     {
@@ -1515,6 +1555,7 @@ void GFimg::write(write_var var,std::string sfile)
         //      break;
         }
         // delete WriteDataSet;
+        WriteDataSet->FlushCache();
         GDALClose((GDALDatasetH)WriteDataSet);
     }else if (var == var_reflectance)
     {
@@ -1555,6 +1596,11 @@ void GFimg::write(write_var var,std::string sfile)
         {
             qDebug("write band4 failed.\n");
         }
+        WriteDataSet1->FlushCache();
+        WriteDataSet2->FlushCache();
+        WriteDataSet3->FlushCache();
+        WriteDataSet4->FlushCache();
+
         GDALClose((GDALDatasetH)WriteDataSet1);
         GDALClose((GDALDatasetH)WriteDataSet2);
         GDALClose((GDALDatasetH)WriteDataSet3);
@@ -1583,6 +1629,7 @@ void GFimg::write(write_var var,std::string sfile)
         //      break;
         }
         // delete WriteDataSet;
+        WriteDataSet->FlushCache();
         GDALClose((GDALDatasetH)WriteDataSet);
     }else
     {

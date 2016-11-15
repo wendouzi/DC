@@ -13,7 +13,7 @@ float E0[] = { 1966.808, 1822.607, 1523.205, 1066.549};
 // ground resolution
 const int GRes = 8;
 const float FIRST_DEGREE = 0.001;
-const float DIST_LIMIT_DEGREE = 0.0002;
+const float DIST_LIMIT_DEGREE = 0.0001;
 const int STEP = 50;
 const int JUMP_NUM = 0;
 const int INPUT_COLS = 4;

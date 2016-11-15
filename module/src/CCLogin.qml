@@ -169,6 +169,8 @@ Rectangle {
             case 4:
                 textInput4.text = save_dir
                 break;
+            case 5:
+                textInput5.text = file_poi
             }
         }
     }
@@ -642,6 +644,64 @@ Rectangle {
                 }
             }
         }
+        Item {
+            id: poi
+
+            Text {
+                id: text5
+                x: 40
+                y: 340
+                width: 80
+                height: 40
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+                text: qsTr("兴趣点经纬度")
+                color: "#590606"
+                font.pixelSize: 14
+            }
+            TextField {
+                id: textInput5
+                x: 140
+                y: 340
+                width: 200
+                height: 40
+                readOnly: false
+                placeholderText: "Select POI (.txt)file"
+                font.pixelSize: 12
+            }
+            Button {
+                id: tiffselectbtn5
+                x: 360
+                y: 340
+                width: 80
+                height: 40
+                text: qsTr("...")
+                checkable: false
+                antialiasing: false
+                z: 0
+                rotation: 0
+                scale: 1
+                clip: false
+                activeFocusOnPress: true
+                onClicked: fileDialog5.visible = true
+            }
+            FileDialog {
+                id: fileDialog5
+                title: "Please choose a POI(.txt) file"
+                nameFilters: ["Image Files (*.txt)"];
+                visible: false
+                selectFolder:false
+                onAccepted: {
+                    cclogin.file_poi = fileDialog5.fileUrl
+              //      textInput4.text = fileDialog4.fileUrl
+                    cclogin.slot_for_fileDialog(5);
+                    fileDialog5.visible = false;
+                }
+                onRejected: {
+                    fileDialog5.visible = false;
+                }
+            }
+        }
 /*
         Component{
             id: checkStyle
@@ -784,7 +844,7 @@ Rectangle {
             y: 400
             width: 80
             height: 40
-            text: qsTr("POI统计")
+            text: qsTr("区域统计")
             checkable: false
             antialiasing: false
             z: 0
@@ -968,6 +1028,7 @@ Rectangle {
         cclogin.file_xml = textInput2.text
         cclogin.file_rpb = textInput3.text
         cclogin.save_dir = textInput4.text
+        cclogin.file_poi = textInput5.text
         cclogin.ndvi_prod = ndviproduct.checked
         cclogin.ndwi_prod = ndwiproduct.checked
         cclogin.svi_prod = sviproduct.checked
