@@ -5,10 +5,12 @@
 #include <math.h>
 #include "tinyxml.h"
 #include "gdal_priv.h"
+#include "gdal_alg.h"
 #include "cpl_conv.h"
 #include "GFimg.h"
 #include "config.h"
 #include "QDebug"
+
 GFimg::GFimg(const std::string  _filename,
             const std::string _xmlfile,
              const std::string _rpbfile,
@@ -33,6 +35,7 @@ GFimg::GFimg(const std::string  _filename,
             , dis(NULL)
             , isShade(NULL)
             , distance(NULL)
+            , density(NULL)
             , latitude(NULL)
             , longitude(NULL)
             , width(-1)
@@ -55,6 +58,7 @@ void GFimg::init()
        // GDALCose(pDataset);
         return ;
    }
+
 //   double adfGeoTransform[6];
 //   pDataset->GetGeoTransform(adfGeoTransform);
 //   qDebug("GeoTransfrom:%f,%f,%f,%f,%f,%f\n",adfGeoTransform[0],adfGeoTransform[1],adfGeoTransform[2],adfGeoTransform[3],adfGeoTransform[4],adfGeoTransform[5]);
@@ -124,7 +128,7 @@ void GFimg::init()
     band4 = _band4;
     CPLFree(pMemData); pMemData = NULL;
     qDebug("read done!\n");
-    GDALClose((GDALDatasetH)pDataset);
+    GDALClose(pDataset);
 }
 
 GFimg::~GFimg()
@@ -200,6 +204,19 @@ void GFimg::print(print_var var)
         else
         {
             qDebug("band1 is NULL");
+        }
+    }
+    else if (print_ndvi == var) {
+        if(ndvi != NULL)
+        {
+            for(int i =0; i < width * height;i+=100000)
+            {
+                qDebug("ndvi: %f", ndvi[i]);
+            }
+        }
+        else
+        {
+            qDebug("ndvi is NULL");
         }
     }
     else if (print_distance == var) {
@@ -959,7 +976,7 @@ void GFimg::areacount(std::pair<int,int> leftup, std::pair<int, int> rightdown)
 
 void GFimg::getCorner()
 {
-    qDebug("extract Value...\n");
+    qDebug("GFimg::getCorner()...\n");
     TiXmlDocument doc(xmlfile.c_str());
     bool loadOkay = doc.LoadFile();  
     if (!loadOkay) {      
@@ -1409,12 +1426,12 @@ bool GFimg::copyrpb( std::string dest)
 
 void GFimg::write(write_var var,std::string sfile)
 {
-    std::string tempsfile = this->savedir + DIR_SEPERATOR + sfile;
+   std::string tempsfile = this->savedir + DIR_SEPERATOR + sfile;
+   qDebug("Save full path: %s", tempsfile.c_str());
     // save the ndvi variable
     if ( var == var_ndvi )
     {
         assert(ndvi != NULL);
-        GDALAllRegister();
         GDALDriver * poDriver;
         char ** papszMetadata;
         poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
@@ -1423,25 +1440,27 @@ void GFimg::write(write_var var,std::string sfile)
             qDebug("GTiff is not supported.\n");
             return;
         }
-        char **papszOptions = NULL; 
+        char **papszOptions = NULL;
+        qDebug("write width:%d, height:%d",width, height);
         GDALDataset *WriteDataSet = poDriver->Create(tempsfile.c_str(), width,height,1,GDT_Float32,papszOptions);
         int poBandMap[1] ={1};
-        if(WriteDataSet->RasterIO(GF_Write,0,0,width,height,ndvi,width,height,GDT_Float32,1,poBandMap,0,0,0)==CE_Failure)
+        if(WriteDataSet->RasterIO(GF_Write,0,0,width,height,ndvi,width,height,GDT_Float32,1,poBandMap,0,0,0) != CE_None)
         {
             qDebug("write ndvi failed.\n");
+            return;
         //      break;
         }
         // delete WriteDataSet;
+
         qDebug("write ndvi done\n");
-        WriteDataSet->FlushCache();
-        GDALClose((GDALDatasetH)WriteDataSet);
+        GDALClose(WriteDataSet);
+   //     GDALDestroyDriverManager();
 
     }
     // save the distance variable
     else if ( var == var_dist )
     {
         assert(distance != NULL);
-        GDALAllRegister();
         GDALDriver * poDriver;
         char ** papszMetadata;
         poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
@@ -1466,7 +1485,6 @@ void GFimg::write(write_var var,std::string sfile)
     }else if ( var == var_density)
     {
         assert( NULL != density);
-        GDALAllRegister();
         GDALDriver * poDriver;
         char ** papszMetadata;
         poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
@@ -1490,7 +1508,6 @@ void GFimg::write(write_var var,std::string sfile)
     }else if (var == var_ndwi)
     {
         assert( NULL != ndwi);
-        GDALAllRegister();
         GDALDriver * poDriver;
         char ** papszMetadata;
         poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
@@ -1514,7 +1531,6 @@ void GFimg::write(write_var var,std::string sfile)
     }else if (var == var_wet)
     {
         assert( NULL != wet);
-        GDALAllRegister();
         GDALDriver * poDriver;
         char ** papszMetadata;
         poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
@@ -1537,7 +1553,6 @@ void GFimg::write(write_var var,std::string sfile)
     }else if (var == var_svi)
     {
         assert( NULL != svi);
-        GDALAllRegister();
         GDALDriver * poDriver;
         char ** papszMetadata;
         poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
@@ -1561,7 +1576,6 @@ void GFimg::write(write_var var,std::string sfile)
     {
         
         assert( NULL != band1);
-        GDALAllRegister();
         GDALDriver * poDriver;
         char ** papszMetadata;
         poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
@@ -1611,7 +1625,6 @@ void GFimg::write(write_var var,std::string sfile)
     }else if (var == var_isShade)
     {
         assert( NULL != isShade);
-        GDALAllRegister();
         GDALDriver * poDriver;
         char ** papszMetadata;
         poDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
@@ -1635,7 +1648,7 @@ void GFimg::write(write_var var,std::string sfile)
     {
         qDebug("unknown save type");
     }
-    copyrpb(sfile);
+   // copyrpb(sfile);
 }
 
 void GFimg::extractValueByFile(std::string geofile, std::string savefile)
@@ -1668,3 +1681,141 @@ void GFimg::extractValueByFile(std::string geofile, std::string savefile)
   //  free(geoinfo); 
 }
 
+void GFimg::extractPOIs( Product pro, std::string pois, std::string out) {
+    qDebug("GFimg::extractPOIs");
+    if(pois.compare(INVILIDPOIS) == 0) {
+        qDebug("There are no valid input poi file");\
+        return;
+    }
+    std::ifstream ifile;
+    ifile.open(pois.c_str(), std::ios::in);
+    if(!ifile.is_open()) {
+        qDebug("%s open failed", pois.c_str());
+        return;
+    }
+
+    std::ofstream ofile;
+    ofile.open(out.c_str(), std::ios::out);
+    if(!ofile.is_open()) {
+        qDebug("extract file : %s failed to open", out.c_str());
+        return;
+    }
+
+    int count = 0;
+    char buf[1024];
+    while(ifile.getline(buf,sizeof(buf))) {
+        count++;
+    }
+    ifile.close();
+    ifile.open(pois.c_str(), std::ios::in);
+    //ifile.seekg(0,std::ios_base::beg);
+    double * lat_t = new double[count];
+    double * lon_t = new double[count];
+    double * height_t = new double[count];
+    float *lat_bak = new float[count];
+    float *lon_bak = new float[count];
+    float * height_bak = new float[count]; // transfer to double for save row and col
+    int *nSuccess = new int[count];
+    int c = 0;
+    while(ifile.getline(buf,sizeof(buf))) {
+        sscanf(buf,"%f %f %f", &lon_bak[c], &lat_bak[c], &height_bak[c]);
+        ++c;
+    }
+
+
+    for(int idx = 0; idx < count; idx++) {
+        lat_t[idx] =  lat_bak[idx];
+        lon_t[idx] = lon_bak[idx];
+        height_t[idx] = height_bak[idx];
+    }
+    for(int idx = 0; idx < count; idx++) {
+        qDebug("Latitude,Longitude:[%f,%f]",
+               lat_t[idx], lon_t[idx]);
+    }
+    GDALAllRegister();
+    GDALDataset * pDS = (GDALDataset *) GDALOpen(filename.c_str(), GA_ReadOnly);
+    char ** papszRPC = pDS->GetMetadata("RPC");
+    GDALRPCInfo oInfo;
+    GDALExtractRPCInfo(papszRPC, &oInfo);
+
+    GDALClose((GDALDatasetH)pDS);
+
+    char ** papszTransOption = NULL;
+    void * pRPCTransform = GDALCreateRPCTransformer(&oInfo, FALSE,0, papszTransOption);
+    // input longitude && latitude
+    // output column && rows
+    GDALRPCTransform(pRPCTransform, TRUE, count, lon_t, lat_t, height_t, nSuccess);
+    int* latidx = new int[count];
+    int *lonidx = new int[count];
+//    for(int idx = 0; idx < count; idx++) {
+//        qDebug("Latitude,Longitude:[%f,%f],Row,Col:[%d,%d]",
+//               lat_bak[idx], lon_bak[idx], latidx[idx]=round(lat_t[idx]), lonidx[idx]=round(lon_t[idx]));
+//    }
+
+    for(int idx = 0; idx < count; idx++) {
+        latidx[idx]=round(lat_t[idx]);lonidx[idx]=round(lon_t[idx]);
+    }
+    qDebug("begin to write");
+    ofile << "Lat" << " " << "Long" << " " <<"Row" <<" " << "Col" << " "<< "Band1" << " " << "Band2" << " " << "Band3" << " "
+          << "Band4";
+
+    if(pro.ndvi) {
+        ofile << "" << "ndvi";
+    }
+    if(pro.ndwi) {
+        ofile << " " << "ndwi";
+    }
+    if(pro.svi) {
+        ofile << " " << "svi";
+    }
+    if(pro.distance) {
+        ofile << " " << "distance";
+    }
+    if(pro.kt) {
+        ofile << " " << "bright" << " " << "wet" << " " << "green";
+    }
+    if(pro.density) {
+        ofile << " " << "density";
+    }
+    ofile<< std::endl;
+    for(int idx = 0; idx < count; idx++) {
+        ofile << lat_bak[idx] << " " << lat_bak[idx];
+        ofile<<" " << latidx[idx] << " " << lonidx[idx];
+
+        if(latidx[idx] > (height-1) || lonidx[idx] > (width-1) || latidx[idx] < 0 || lonidx[idx] < 0) {
+            ofile<<" -1 -1 -1 -1"<<std::endl;
+            continue;
+        }
+        int num = latidx[idx] * width + lonidx[idx];
+
+        ofile <<" "<< band1[num] << " " << band2[num] << " "
+                                      << band3[num] << " "<< band4[num];
+        if(pro.ndvi) {
+            ofile << " " << ndvi[num];
+        }
+        if(pro.ndwi) {
+            ofile << " " << ndwi[num];
+        }
+        if(pro.svi) {
+            ofile << " " << svi[num];
+        }
+        if(pro.distance) {
+            ofile << " " << distance[num];
+        }
+        if(pro.kt) {
+            ofile << " " << bright[num] << " " << wet[num] << " " << green[num];
+        }
+        if(pro.density) {
+            ofile << " " << density[num];
+        }
+        ofile<<std::endl;
+    }
+
+    ifile.close();
+    ofile.close();
+    delete latidx, lat_bak, lat_t;
+    delete lonidx, lon_bak, lon_t;
+    delete height_bak, height_t;
+    delete nSuccess;
+    qDebug("GFimg::extractPOIs done");
+}

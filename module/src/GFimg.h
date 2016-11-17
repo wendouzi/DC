@@ -13,6 +13,7 @@
 #include <utility>
 #include "CCBaseTypeDefine.h"
 #include "QImage"
+#include "products.h"
 #define ST_WFV1 0 // SensorType WFV1
 #define ST_WFV2 1 // SensorType WFV2
 #define ST_WFV3 2 // SensorType WFV3
@@ -29,7 +30,7 @@
 #define RATIO43_WATERINDEX (3.5)
 #define RATIO43_MIN (-5)
 #define RATIO43_MAX (5)
-
+#define INVILIDPOIS  "invalid.poi.file"
 
 
 
@@ -165,7 +166,7 @@ class GFimg
         void areacount(std::pair<int,int> leftup, std::pair<int, int> rightdown );
         void setPOI(std::pair<int,int> leftup, std::pair<int, int> rightdown );
         bool copyrpb(std::string dest);
-
+        void extractPOIs( const  Product pro, const std::string pois = INVILIDPOIS,const std::string out = INVILIDPOIS);
     //    void setWantedProducts(std::string prods);
 
 

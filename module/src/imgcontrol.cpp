@@ -6,6 +6,7 @@
 #include <QDateTime>
 #include <QProcess>
 #include <QStringList>
+#include "products.h"
 ImgControl::ImgControl():
     m_bcancelFlag(false)
 {
@@ -50,19 +51,23 @@ void ImgControl::slot_to_process(QString _tiff, QString _xml, QString _rpb, QStr
     GFimg * m_pGF = new GFimg(_tiff.toStdString(), _xml.toStdString(), _rpb.toStdString(), _sdir.toStdString());
     m_pGF->getCorner();
     m_pGF->init();
-
+    Product pro;
     if(want[NDVI_ORDER]) {
+        pro.ndvi = true;
         if(cancelFlag::getInstance()->getCancelFlag()) {
         }
         else {
             out<< QString("Begin to calculate NDVI ") << endl;
             m_pGF->getNDVI();
+            //m_pGF->print(print_ndvi);
             out << QString("calculate NDVI done, begin to write to save directory")<< endl;
             m_pGF->write(var_ndvi, "ndvi.tiff");
             out<< QString("write ndvi done") << endl;
+
         }
     }
     if(want[NDWI_ORDER]) {
+        pro.ndwi = true;
         if(cancelFlag::getInstance()->getCancelFlag()) {
         }
         else {
@@ -74,6 +79,7 @@ void ImgControl::slot_to_process(QString _tiff, QString _xml, QString _rpb, QStr
         }
     }
     if(want[SVI_ORDER]) {
+        pro.svi = true;
         if(cancelFlag::getInstance()->getCancelFlag()) {
         }
         else {
@@ -86,6 +92,7 @@ void ImgControl::slot_to_process(QString _tiff, QString _xml, QString _rpb, QStr
     }
 
     if(want[DISTANCE_ORDER]) {
+        pro.distance = true;
         if(cancelFlag::getInstance()->getCancelFlag()) {
 
         }
@@ -98,6 +105,7 @@ void ImgControl::slot_to_process(QString _tiff, QString _xml, QString _rpb, QStr
         }
     }
     if(want[KT_ORDER]) {
+        pro.kt = true;
         if(cancelFlag::getInstance()->getCancelFlag()) {
 
         }
@@ -113,6 +121,7 @@ void ImgControl::slot_to_process(QString _tiff, QString _xml, QString _rpb, QStr
     }
 
     if(want[DENSITY_ORDER]) {
+        pro.density = true;
         if(cancelFlag::getInstance()->getCancelFlag()) {
         }
         else {
@@ -124,6 +133,7 @@ void ImgControl::slot_to_process(QString _tiff, QString _xml, QString _rpb, QStr
         }
     }
     if(want[RISK_ORDER]) {
+        pro.risk = true;
         if(cancelFlag::getInstance()->getCancelFlag()) {
 
         }
@@ -133,14 +143,14 @@ void ImgControl::slot_to_process(QString _tiff, QString _xml, QString _rpb, QStr
     }
     if(_poi.compare(FILE_EMPTY) != 0) {
         if(cancelFlag::getInstance()->getCancelFlag()) {
-
         }
         else {
             out<< QString("Begin to extract POIs ") << endl;
             QString extractFilePath = _sdir+ sep+ QString("extractResult.txt");
-            m_pGF->generate_Lat_Long();
-            m_pGF->readGeoinfo(_poi.toStdString());
-            m_pGF->doextract(extractFilePath.toStdString());
+        //    m_pGF->generate_Lat_Long();
+        //    m_pGF->readGeoinfo(_poi.toStdString());
+        //    m_pGF->doextract(extractFilePath.toStdString());
+            m_pGF->extractPOIs(pro,_poi.toStdString(),extractFilePath.toStdString());
         }
     }
 

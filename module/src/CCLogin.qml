@@ -150,6 +150,8 @@ Rectangle {
                 messageDialog.text = "没有选中任何产品"
                 messageDialog.visible = true
                 break;
+            default:
+                break;
             }
         }
 
@@ -345,6 +347,7 @@ Rectangle {
             messageDialog.visible = false
         }
         visible: false
+
        // Component.onCompleted: visible = true
     }
     //登陆动画
