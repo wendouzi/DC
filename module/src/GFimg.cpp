@@ -1779,7 +1779,7 @@ void GFimg::extractPOIs( Product pro, std::string pois, std::string out) {
     }
     ofile<< std::endl;
     for(int idx = 0; idx < count; idx++) {
-        ofile << lat_bak[idx] << " " << lat_bak[idx];
+        ofile << lat_bak[idx] << " " << lon_bak[idx];
         ofile<<" " << latidx[idx] << " " << lonidx[idx];
 
         if(latidx[idx] > (height-1) || lonidx[idx] > (width-1) || latidx[idx] < 0 || lonidx[idx] < 0) {
