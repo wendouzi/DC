@@ -1922,7 +1922,11 @@ void GFimg::extractPOIs( Product pro, std::string pois, std::string out) {
           << "Band4";
 
     if(pro.ndvi) {
+<<<<<<< HEAD
         ofile << " " << "ndvi";
+=======
+        ofile << "" << "ndvi";
+>>>>>>> be7e13b81f57de33bff834e4b5d07d92ddcb3952
     }
     if(pro.ndwi) {
         ofile << " " << "ndwi";
@@ -1962,7 +1966,11 @@ void GFimg::extractPOIs( Product pro, std::string pois, std::string out) {
             ofile << " " << svi[num];
         }
         if(pro.distance) {
+<<<<<<< HEAD
             ofile << " " << getDistance2water(Pixel2Water,latidx[idx],lonidx[idx]);// row col
+=======
+            ofile << " " << distance[num];
+>>>>>>> be7e13b81f57de33bff834e4b5d07d92ddcb3952
         }
         if(pro.kt) {
             ofile << " " << bright[num] << " " << wet[num] << " " << green[num];
@@ -1981,6 +1989,7 @@ void GFimg::extractPOIs( Product pro, std::string pois, std::string out) {
     delete nSuccess;
     qDebug("GFimg::extractPOIs done");
 }
+<<<<<<< HEAD
 
 void GFimg::getUrban() {
     qDebug("getUrban()...\n");
@@ -2165,3 +2174,5 @@ void GFimg::CalRisk() {
            }
        }
 }
+=======
+>>>>>>> be7e13b81f57de33bff834e4b5d07d92ddcb3952

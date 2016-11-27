@@ -37,6 +37,7 @@
 #define RISKMINMUM   (0.0)
 
 
+
 #ifdef __WINDOWS_
 #define DIR_SEPERATOR "\\"
 #else
