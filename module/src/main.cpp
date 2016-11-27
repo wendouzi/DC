@@ -22,6 +22,7 @@ int main(int argc, char *argv[])
     QObject * object = com.create();
     //PreViewPainter * p = object->findChild<PreViewPainter *>("CCPainter");
     CCLogin * l = object->findChild<CCLogin *>("CCLoginUI");
+  //  MessageDialog *l->findChild<MessageDialog *>("messageDialog");
     PreView * pr = object->findChild<PreView *>("CCPreviewer");
 
     if(pr != NULL && l != NULL ) {

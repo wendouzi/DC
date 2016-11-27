@@ -13,6 +13,7 @@
 #include <utility>
 #include "CCBaseTypeDefine.h"
 #include "QImage"
+#include "products.h"
 #define ST_WFV1 0 // SensorType WFV1
 #define ST_WFV2 1 // SensorType WFV2
 #define ST_WFV3 2 // SensorType WFV3
@@ -25,12 +26,15 @@
 #define NDVI_CENTER (0.5)
 #define NDWI_MIN (-5)
 #define NDWI_MAX (5)
-#define NDWI_WATERINDEX (0.15)
+#define NDWI_WATERINDEX (0)
+#define URBANINDEX 0.10
+#define WATERVALUE   (-1)
 #define RATIO43_WATERINDEX (3.5)
 #define RATIO43_MIN (-5)
 #define RATIO43_MAX (5)
-
-
+#define INVILIDPOIS  "invalid.poi.file"
+#define URBANRISKVALUE (0)
+#define RISKMINMUM   (0.0)
 
 
 #ifdef __WINDOWS_
@@ -57,6 +61,7 @@
         var_isShade,
         var_reflectance,
         var_density,
+        var_urban,
         var_risk
     };
     enum DistAlgo
@@ -97,6 +102,7 @@ class GFimg
         float * longitude;
         float * ndvi;
         bool * wi;
+        bool * urban;
         float * svi;
         float * ndwi;
         float * bright;
@@ -105,6 +111,7 @@ class GFimg
         float * dis;
         float * distance;
         float * density;
+        float * risk;
         float * isShade;
         int insituPoints;
         float * geoinfo; // latitude and longitude  of in situ points
@@ -138,9 +145,11 @@ class GFimg
         void getNDWI();
         void getSVI();
         void getWI();
+        void getUrban();
         void getIsShade();
         void getKTtransform();
         void getDistance2water(DistAlgo da);
+        float getDistance2water(DistAlgo da, int row, int col);
         void getDistance2water();
         void caldensity();
         void caldensity(Method me = TEST_CASE);
@@ -165,9 +174,9 @@ class GFimg
         void areacount(std::pair<int,int> leftup, std::pair<int, int> rightdown );
         void setPOI(std::pair<int,int> leftup, std::pair<int, int> rightdown );
         bool copyrpb(std::string dest);
-
+        void extractPOIs( const  Product pro, const std::string pois = INVILIDPOIS,const std::string out = INVILIDPOIS);
     //    void setWantedProducts(std::string prods);
-
+        void CalRisk();
 
 };
 
