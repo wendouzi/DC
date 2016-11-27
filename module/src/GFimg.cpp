@@ -1922,11 +1922,7 @@ void GFimg::extractPOIs( Product pro, std::string pois, std::string out) {
           << "Band4";
 
     if(pro.ndvi) {
-<<<<<<< HEAD
         ofile << " " << "ndvi";
-=======
-        ofile << "" << "ndvi";
->>>>>>> be7e13b81f57de33bff834e4b5d07d92ddcb3952
     }
     if(pro.ndwi) {
         ofile << " " << "ndwi";
@@ -1966,11 +1962,7 @@ void GFimg::extractPOIs( Product pro, std::string pois, std::string out) {
             ofile << " " << svi[num];
         }
         if(pro.distance) {
-<<<<<<< HEAD
             ofile << " " << getDistance2water(Pixel2Water,latidx[idx],lonidx[idx]);// row col
-=======
-            ofile << " " << distance[num];
->>>>>>> be7e13b81f57de33bff834e4b5d07d92ddcb3952
         }
         if(pro.kt) {
             ofile << " " << bright[num] << " " << wet[num] << " " << green[num];
@@ -1989,7 +1981,101 @@ void GFimg::extractPOIs( Product pro, std::string pois, std::string out) {
     delete nSuccess;
     qDebug("GFimg::extractPOIs done");
 }
-<<<<<<< HEAD
+
+void GFimg::extractUrban(const Product pro, std::string savefile) {
+    if(urban == NULL) {
+        getUrban();
+    }
+    std::ofstream ofile;
+    ofile.open(savefile.c_str(), std::ios::out);
+    if(!ofile.is_open()) {
+        qDebug("extract file : %s failed to open", savefile.c_str());
+        return;
+    }
+
+    GDALAllRegister();
+    GDALDataset * pDS = (GDALDataset *) GDALOpen(filename.c_str(), GA_ReadOnly);
+    char ** papszRPC = pDS->GetMetadata("RPC");
+    GDALRPCInfo oInfo;
+    GDALExtractRPCInfo(papszRPC, &oInfo);
+
+    GDALClose((GDALDatasetH)pDS);
+
+    char ** papszTransOption = NULL;
+    void * pRPCTransform = GDALCreateRPCTransformer(&oInfo, FALSE,0, papszTransOption);
+    int nSuccess;
+    double lon_t;
+    double lat_t;
+    double h;
+    qDebug("begin to write");
+    ofile << "Lat" << " " << "Long" << " " <<"Row" <<" " << "Col" << " "<< "Band1" << " " << "Band2" << " " << "Band3" << " "
+          << "Band4";
+
+    if(pro.ndvi) {
+        ofile << " " << "ndvi";
+    }
+    if(pro.ndwi) {
+        ofile << " " << "ndwi";
+    }
+    if(pro.svi) {
+        ofile << " " << "svi";
+    }
+    if(pro.distance) {
+        ofile << " " << "distance";
+    }
+    if(pro.kt) {
+        ofile << " " << "bright" << " " << "wet" << " " << "green";
+    }
+    if(pro.density) {
+        ofile << " " << "density";
+    }
+    ofile<< std::endl;
+    for(int row = 0; row < height; row+=10) {
+        for(int col =0; col < width; col+=10) {
+            int num = row * width + col;
+            if(urban[num]) {
+               // input longitude && latitude
+                // output column && rows
+                lon_t = col;
+                lat_t = row;
+                GDALRPCTransform(pRPCTransform, FALSE, 1, &lon_t, &lat_t, &h, &nSuccess);
+                ofile << lat_t << " " << lon_t;
+                ofile<<" " << row << " " << col;
+
+
+                ofile <<" "<< band1[num] << " " << band2[num] << " "
+                                              << band3[num] << " "<< band4[num];
+                if(pro.ndvi) {
+                    ofile << " " << ndvi[num];
+                }
+                if(pro.ndwi) {
+                    ofile << " " << ndwi[num];
+                }
+                if(pro.svi) {
+                    ofile << " " << svi[num];
+                }
+                if(pro.distance) {
+                    ofile << " " << getDistance2water(Pixel2Water,row,col);// row col
+                }
+                if(pro.kt) {
+                    ofile << " " << bright[num] << " " << wet[num] << " " << green[num];
+                }
+                if(pro.density) {
+                    ofile << " " << density[num];
+                }
+                if(pro.risk) {
+                    ofile<<" " << risk[num];
+                }
+                ofile<<std::endl;
+            }
+        }
+    }
+    ofile.close();
+}
+
+
+
+
 
 void GFimg::getUrban() {
     qDebug("getUrban()...\n");
@@ -2174,5 +2260,3 @@ void GFimg::CalRisk() {
            }
        }
 }
-=======
->>>>>>> be7e13b81f57de33bff834e4b5d07d92ddcb3952

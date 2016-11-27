@@ -37,7 +37,6 @@
 #define RISKMINMUM   (0.0)
 
 
-
 #ifdef __WINDOWS_
 #define DIR_SEPERATOR "\\"
 #else
@@ -178,7 +177,7 @@ class GFimg
         void extractPOIs( const  Product pro, const std::string pois = INVILIDPOIS,const std::string out = INVILIDPOIS);
     //    void setWantedProducts(std::string prods);
         void CalRisk();
-
+        void extractUrban(const Product pro, std::string savefile);
 };
 
 #endif /* GFIMG_H*/

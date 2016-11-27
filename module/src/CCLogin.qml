@@ -71,11 +71,13 @@ Rectangle {
                 textInput2.enabled = true
                 textInput3.enabled = true
                 textInput4.enabled = true
+                textInput5.enabled = true
                 outputproducts.enabled = true
                 tiffselectbtn1.enabled = true
                 tiffselectbtn2.enabled = true
                 tiffselectbtn3.enabled = true
                 tiffselectbtn4.enabled = true
+                tiffselectbtn5.enabled = true
                 precessbtn.enabled = true
                 messageDialog.text = "处理完成"
                 messageDialog.visible = true
@@ -114,11 +116,13 @@ Rectangle {
                 tiffselectbtn2.enabled = false
                 tiffselectbtn3.enabled = false
                 tiffselectbtn4.enabled = false
+                tiffselectbtn5.enabled = false
                 outputproducts.enabled = false
                 textInput1.enabled = false
                 textInput2.enabled = false
                 textInput3.enabled = false
                 textInput4.enabled = false
+                textInput5.enabled = false
                 // open process AnimatedImage
                 process_gif.opacity = 1
                 break;
@@ -134,10 +138,12 @@ Rectangle {
                 textInput2.enabled = true
                 textInput3.enabled = true
                 textInput4.enabled = true
+                textInput5.enabled = true
                 tiffselectbtn1.enabled = true
                 tiffselectbtn2.enabled = true
                 tiffselectbtn3.enabled = true
                 tiffselectbtn4.enabled = true
+                tiffselectbtn5.enabled = true
                 outputproducts.enabled = true
                 precessbtn.enabled = true
                 messageDialog.text = "取消成功"

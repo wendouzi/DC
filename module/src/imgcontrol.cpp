@@ -153,15 +153,14 @@ void ImgControl::slot_to_process(QString _tiff, QString _xml, QString _rpb, QStr
         else {
             out<< QString("Begin to extract POIs ") << endl;
             QString extractFilePath = _sdir+ sep+ QString("extractResult.txt");
+            QString urbanextract = _sdir+ sep+ QString("extractUrban.txt");
         //    m_pGF->generate_Lat_Long();
         //    m_pGF->readGeoinfo(_poi.toStdString());
         //    m_pGF->doextract(extractFilePath.toStdString());
-<<<<<<< HEAD
 
             pro.distance = true;
-=======
->>>>>>> be7e13b81f57de33bff834e4b5d07d92ddcb3952
             m_pGF->extractPOIs(pro,_poi.toStdString(),extractFilePath.toStdString());
+            m_pGF->extractUrban(pro,urbanextract.toStdString());
         }
     }
 
